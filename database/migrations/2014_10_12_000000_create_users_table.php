@@ -15,8 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('avatar')->nullable();
+            $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->unsignedBigInteger('plan_id')->nullable();
+            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
+            $table->string('fcm_id')->nullable();
+            $table->string('device_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
