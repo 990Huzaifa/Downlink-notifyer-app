@@ -20,13 +20,29 @@ class SiteLinkController extends Controller
         try{
             $user = Auth::user();
 
-            $search = $request->input('search', '');
+            $title = $request->input('title', '');
+            $status = $request->input('status', '');
+            $duration = $request->input('duration', ''); //no of days
             
             $query = SiteLink::where('user_id', $user->id)->orderBy('created_at', 'desc');
 
-            if ($search) {
-                $query->where('title', 'like', '%' . $search . '%');
+            if ($title) {
+                $query->where('title', 'like', '%' . $title . '%');
             }         
+
+            if ($duration) {
+                // here we filter records based on duration in days created_at
+                $query->where('created_at', '>=', Carbon::now()->subDays($duration));
+            }
+
+            switch ($status) {
+                case 'active':
+                    $query->where('is_active', 'active');
+                    break;
+                case 'inactive':
+                    $query->where('is_active', 'inactive');
+                    break;
+            }
 
             $result = $query->paginate(10);
 
