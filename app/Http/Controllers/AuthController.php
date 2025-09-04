@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\VerifyAccountMail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -15,9 +16,95 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OTPMail;
 use Illuminate\Support\Facades\DB;
 use App\Models\PasswordResetToken;
+use App\Services\SmsService;
 
 class AuthController extends Controller
 {
+    public function signup(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email|exists:users,email',
+                'password' => 'required',
+                'device_id' => 'required',
+                'fcm_token' => 'required',
+            ], [
+                'name.required' => 'Name is required',
+                'email.required' => 'Email is required',
+                'email.email' => 'Invalid email format',
+                'password.required' => 'Password is required',
+                'device_id.required' => 'Device ID is required',
+                'fcm_token.required' => 'FCM Token is required',
+            ]);
+
+            if ($validator->fails())
+                throw new Exception($validator->errors()->first(), 400);
+
+
+            $token = rand(1000, 9999);
+            $rider = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'status' => 'active',
+                'device_id' => $request->device_id,
+                'fcm_token' => $request->fcm_token,
+                'remember_token' => $token,
+            ]);
+
+            Mail::to($request->email)->send(new VerifyAccountMail([
+                'message' => 'Hi ' . $rider->first_name . $rider->last_name . ', This is your one time password',
+                'otp' => $token,
+                'is_url' => false
+            ]));
+            DB::commit();
+            return response()->json(['message' => 'Your account has been created successfully'], 200);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 403);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
+
+    public function verification(string $token, string $email): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+            $validator = Validator::make([
+                'token' => $token,
+                'email' => $email,
+            ], [
+                'token.required' => 'Token is required',
+                'email.required' => 'Email is required',
+            ]);
+
+            $is_verify = User::where('email', $email)->first();
+            if ($is_verify->email_verified_at != null)
+                throw new Exception('Email already verified');
+            if ($validator->fails())
+                throw new Exception($validator->errors()->first(), 400);
+            $user = User::where('remember_token', $token)->where('email', $email)->first();
+            if (!$user)
+                throw new Exception('Invalid Request');
+
+            $user->email_verified_at = now();
+            $user->remember_token = null;
+            $user->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Your account has been verified successfully'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function signin(Request $request):JsonResponse
     {
         try{
@@ -56,7 +143,6 @@ class AuthController extends Controller
                 $request->all(),
                 [
                     'email' => 'required|email|exists:users',
-                    'role' => 'required|in:technician,manager',
                 ],
                 [
                     'email.required' => 'Email Address required',
@@ -86,7 +172,7 @@ class AuthController extends Controller
                 'message' => 'Hi ' . $user->first_name . $user->last_name . 'This is your one time password',
                 'otp' => $token,
                 'is_url' => false
-            ]));
+            ],'Reset Password OTP'));
             return response()->json([
                 'message' => 'Reset OTP sent successfully',
             ], 200);
@@ -173,7 +259,7 @@ class AuthController extends Controller
                 Mail::to($request->email)->send(new OTPMail([
                     'message' => 'Hi, This is your one time password',
                     'otp' => $token
-                ]));
+                ],'Reset Password OTP'));
 
 
 
@@ -229,4 +315,52 @@ class AuthController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+
+    // verify phone number
+
+    public function verifyPhone(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required|unique:users,phone',
+                'token' => 'nullable',
+            ], [
+                'phone.required' => 'Phone number is required',
+                'phone.unique' => 'Phone number already exists',
+            ]);
+
+            if ($validator->fails())
+                throw new Exception($validator->errors()->first(), 400);
+
+            if($request->token){
+                $check_user = User::where('phone', $request->phone)->where('otp', $request->token)->first();
+                if(!$check_user) throw new Exception('Invalid token', 400);
+                $check_user->update([
+                    'otp' => null,
+                    'phone_verified_at' => now(),
+                ]);
+                
+            }else{
+                $user = Auth::user();
+                $token = rand(1000, 9999);
+                // send otp to phone number
+
+                $body = 'Hi ' . $user->name . ', This is your one time password: ' . $token;
+                $smsService = new SmsService();
+                $smsService->sendSms($request->phone, $body);
+                $user->update([
+                    'otp', $token,
+                    'phone' => $request->phone,
+                ]);
+            }
+
+            return response()->json(['message' => 'Phone number verified successfully'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

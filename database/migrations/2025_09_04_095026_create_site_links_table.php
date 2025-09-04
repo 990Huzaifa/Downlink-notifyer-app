@@ -19,8 +19,12 @@ return new class extends Migration
             $table->string('url');
             // 30sec, 1m, 5m, 30m, 1h, 12, 24h in seconds
             $table->enum('duration',['30','60','300','1800','3600','43200','86400']);
-            $table->boolean('is_active')->default(false);
+            $table->enum('is_active',['active','inactive'])->default('active');
             $table->enum('status',['working','down']);
+            // notifyers
+            $table->boolean('notify_email')->default(false);
+            $table->boolean('notify_sms')->default(false);
+            $table->boolean('notify_push')->default(true);
             $table->timestamps();
         });
     }
