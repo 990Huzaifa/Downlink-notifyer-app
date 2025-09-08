@@ -16,7 +16,6 @@ class SiteLink extends Model
         'url',
         'duration',
         'is_active',
-        'status',
         'notify_email',
         'notify_sms',
         'notify_push',

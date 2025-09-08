@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SiteCheck;
 use App\Models\SiteLink;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -109,23 +110,25 @@ class SiteLinkController extends Controller
             // here we hit the url to test that site is working or not by their status code
             // if status code is 200 then site is working otherwise down
 
-            $response = Http::get($request->url);
-            $status = 'working';
-            if ($response->status() === 200) {
-                $status = 'working';
-            } else {
-                $status = 'down';
-            }
+            $metrics = probe($request->url, (int)$request->duration, 15);
 
             $data = SiteLink::create([
                 'user_id' => $user->id,
                 'title' => $request->title,
                 'url' => $request->url,
                 'duration' => $request->duration,
-                'status' => $status,
                 'notify_email' => $request->notify_email,
                 'notify_sms' => $request->notify_sms,
                 'notify_push' => $request->notify_push,
+            ]);
+
+            SiteCheck::create([
+                'site_link_id' => $data->id,
+                'status' => $metrics['status'],
+                'response_time_ms' => $metrics['response_time_ms'],
+                'ssl_days_left'    => $metrics['ssl_days_left'],
+                'html_bytes'       => $metrics['html_bytes'],
+                'checked_at' => $metrics['last_checked_at'],
             ]);
 
             DB::commit();
