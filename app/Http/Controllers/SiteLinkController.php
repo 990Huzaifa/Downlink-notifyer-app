@@ -61,8 +61,11 @@ class SiteLinkController extends Controller
         try{
             $user = Auth::user();
 
-            $data = SiteLink::find($id);
-            if (!$data || $data->user_id !== $user->id) throw new Exception('Record not found', 404);
+            $data = SiteLink::select('site_links.*','site_checks.*')
+            ->join('site_checks', 'site_checks.site_link_id', '=', 'site_links.id')
+            ->where('site_links.id', $id)
+            ->orderBy('site_checks.checked_at', 'desc')
+            ->first();
 
             return response()->json($data, 200);
         }catch(QueryException $e){
@@ -203,26 +206,13 @@ class SiteLinkController extends Controller
             DB::beginTransaction();
 
             $data = SiteLink::findOrFail($id);
-            if (!$data) {
-                throw new Exception('Record not found', 404);
-            }
-            // here we hit the url to test that site is working or not by their status code
-            // if status code is 200 then site is working otherwise down
-
-            $response = Http::get($request->url);
-            $status = 'working';
-            if ($response->status() === 200) {
-                $status = 'working';
-            } else {
-                $status = 'down';
-            }
+            if (!$data) throw new Exception('Record not found', 404);
 
             $data->update([
                 'user_id' => $user->id,
                 'title' => $request->title,
                 'url' => $request->url,
                 'duration' => $request->duration,
-                'status' => $status,
                 'notify_email' => $request->notify_email,
                 'notify_sms' => $request->notify_sms,
                 'notify_push' => $request->notify_push,

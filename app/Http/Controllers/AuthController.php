@@ -39,8 +39,7 @@ class AuthController extends Controller
                 'fcm_token.required' => 'FCM Token is required',
             ]);
 
-            if ($validator->fails())
-                throw new Exception($validator->errors()->first(), 400);
+            if ($validator->fails()) throw new Exception($validator->errors()->first(), 400);
 
 
             $token = rand(1000, 9999);
@@ -317,7 +316,7 @@ class AuthController extends Controller
     }
 
 
-    // verify phone number
+    // verify phone number ()
 
     public function verifyPhone(Request $request): JsonResponse
     {

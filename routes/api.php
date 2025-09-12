@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SiteLinkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,16 @@ Route::post('resend-code', [AuthController::class, 'resendCode']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('change-password', [AuthController::class, 'changePassword']);
-        Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/logout', [AuthController::class, 'logout']);
+
+    Route::controller(SiteLinkController::class)->group(function () {
+        Route::get('/site-link', 'index');
+        Route::post('/site-link', 'store');
+        Route::get('/site-link/{id}', 'show');
+        Route::put('/site-link/{id}', 'update');
+        Route::delete('/site-link/{id}', 'destroy');
+        Route::put('/status/site-link/{id}', 'updateStatus');
+
+    });
         
 });
