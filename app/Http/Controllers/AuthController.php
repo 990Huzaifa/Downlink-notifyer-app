@@ -26,7 +26,7 @@ class AuthController extends Controller
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => 'required|email',
+                'email' => 'required|email|unique:users,email',
                 'password' => 'required',
                 'device_id' => 'required',
                 'fcm_token' => 'required',
@@ -34,6 +34,7 @@ class AuthController extends Controller
                 'name.required' => 'Name is required',
                 'email.required' => 'Email is required',
                 'email.email' => 'Invalid email format',
+                'email.unique' => 'Email already exists',
                 'password.required' => 'Password is required',
                 'device_id.required' => 'Device ID is required',
                 'fcm_token.required' => 'FCM Token is required',
