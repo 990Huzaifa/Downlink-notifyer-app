@@ -17,9 +17,5 @@ class SiteCheck extends Model {
         'html_bytes',
         'checked_at',
     ];
-    public $timestamps = false;
-}
 
-class SiteLink extends Model {
-    public function checks() { return $this->hasMany(SiteCheck::class); }
 }
