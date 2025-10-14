@@ -25,23 +25,26 @@ class SiteLinkController extends Controller
             $status = $request->input('status', '');
             $duration = $request->input('duration', ''); //no of days
             
-            $query = SiteLink::where('user_id', $user->id)->orderBy('created_at', 'desc');
+            $query = SiteLink::select('site_links.*', 'site_checks.*')
+            ->where('site_links.user_id', $user->id)
+            ->join('site_checks', 'site_checks.site_link_id', '=', 'site_links.id')
+            ->orderBy('site_links.created_at', 'desc');
 
             if ($title) {
-                $query->where('title', 'like', '%' . $title . '%');
+                $query->where('site_links.title', 'like', '%' . $title . '%');
             }         
 
             if ($duration) {
                 // here we filter records based on duration in days created_at
-                $query->where('created_at', '>=', Carbon::now()->subDays($duration));
+                $query->where('site_links.created_at', '>=', Carbon::now()->subDays($duration));
             }
 
             switch ($status) {
                 case 'active':
-                    $query->where('is_active', 'active');
+                    $query->where('site_links.is_active', 'active');
                     break;
                 case 'inactive':
-                    $query->where('is_active', 'inactive');
+                    $query->where('site_links.is_active', 'inactive');
                     break;
             }
 
