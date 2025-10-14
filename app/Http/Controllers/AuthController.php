@@ -44,7 +44,7 @@ class AuthController extends Controller
 
 
             $token = rand(1000, 9999);
-            $rider = User::create([
+            $data = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -55,7 +55,7 @@ class AuthController extends Controller
             ]);
 
             Mail::to($request->email)->send(new VerifyAccountMail([
-                'message' => 'Hi ' . $rider->first_name . $rider->last_name . ', This is your one time password',
+                'message' => 'Hi ' . $data->first_name . $data->last_name . ', This is your one time password',
                 'otp' => $token,
                 'is_url' => false
             ]));
@@ -120,7 +120,6 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password)) throw new Exception('Invalid email address or password', 400);
-            if($user->role != $request->role) throw new Exception('Account not authorized', 400);
             // $user->tokens()->delete();
 
             $user->update([
@@ -129,7 +128,7 @@ class AuthController extends Controller
                 'device_id' => $request->device_id,
             ]);
 
-            $token = $user->createToken('manager-token', [$request->role])->plainTextToken; 
+            $token = $user->createToken('auth-token')->plainTextToken; 
             return response()->json(['token' => $token, 'user' => $user], 200);
         }catch(Exception $e){
             return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
