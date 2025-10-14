@@ -15,6 +15,7 @@ class SiteCheck extends Model {
         'response_time_ms',
         'ssl_days_left',
         'html_bytes',
+        'assets_bytes',
         'checked_at',
     ];
 

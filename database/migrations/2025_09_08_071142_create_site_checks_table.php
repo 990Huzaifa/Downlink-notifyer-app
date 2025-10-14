@@ -16,9 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('site_link_id');
             $table->foreign('site_link_id')->references('id')->on('site_links')->onDelete('cascade');
             $table->enum('status',['up','down']);
-            $table->integer('response_time_ms')->nullable();
-            $table->integer('ssl_days_left')->nullable();
-            $table->integer('html_bytes')->nullable();
+            $table->bigInteger('response_time_ms')->nullable();
+            $table->bigInteger('ssl_days_left')->nullable();
+            $table->bigInteger('html_bytes')->nullable();
+            $table->bigInteger('assets_bytes')->nullable();
             $table->timestamp('checked_at');
             $table->timestamps();
         });
