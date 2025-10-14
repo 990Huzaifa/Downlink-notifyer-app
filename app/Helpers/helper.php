@@ -32,6 +32,35 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
         ])
         ->get($url);
 
+
+            // new retrive
+                $psi_api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+                $psi_response = Http::get($psi_api_url, [
+                    'url'      => $url, // User ka URL
+                    'strategy' => 'desktop', // Ya 'mobile'
+                    // Aapko API key ki zaroorat nahi hai, agar requests limited ho
+                ]);
+                $performanceScore = null;
+                $seoScore = null;
+                $lcp = null;
+                if ($psi_response->successful()) {
+                    $data = $psi_response->json();
+
+                    // Data nikalna
+                    $performanceScore = $data['lighthouseResult']['categories']['performance']['score'] * 100;
+                    $seoScore = $data['lighthouseResult']['categories']['seo']['score'] * 100;
+                    
+                    // Core Web Vitals
+                    $lcp = $data['lighthouseResult']['audits']['largest-contentful-paint']['displayValue'];
+
+                    // ... baaqi sab metrics bhi yahan se mil jaengi.
+                }
+            // new retrive end
+
+
+
+
+
     $statusCode   = $response->status();
     $isUp         = ($statusCode >= 200 && $statusCode < 400);
     $finalUrl     = (string) ($response->effectiveUri() ?? $url);
@@ -75,6 +104,10 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
         'final_url'        => $finalUrl,
         'content_type'     => $contentType,
         'content_encoding' => $encoding,
+
+        'performanceScore' => $performanceScore,
+        'seoScore' => $seoScore,
+        'lcp' => $lcp
     ];
 }
 
