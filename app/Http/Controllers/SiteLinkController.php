@@ -97,6 +97,7 @@ class SiteLinkController extends Controller
                     'url.required' => 'URL is required.',
                     'url.url' => 'Invalid URL format.',
                     'url.max' => 'URL may not be greater than 255 characters.',
+                    'url.unique' => 'URL already exists.',
                     'duration.required' => 'Duration is required.',
                     'duration.in' => 'Invalid duration selected.',
                     'notify_email.boolean' => 'Notify email must be true or false.',
