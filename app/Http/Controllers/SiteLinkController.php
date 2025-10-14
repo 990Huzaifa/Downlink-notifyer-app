@@ -84,7 +84,7 @@ class SiteLinkController extends Controller
                 $request->all(),
                 [
                     'title' => 'required|string|max:255',
-                    'url' => 'required|url|max:255',
+                    'url' => 'required|url|max:255|unique:site_links,url',
                     'duration' => 'required|in:30,60,300,1800,3600,43200,86400',
                     'notify_email' => 'required|boolean',
                     'notify_sms' => 'required|boolean',
