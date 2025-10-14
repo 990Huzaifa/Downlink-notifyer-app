@@ -19,6 +19,20 @@ class UserController extends Controller
         }
     }
 
+    public function update(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->save();
+            return response()->json(['message' => 'profile updated successfully', 'user' => $user], 200);
+        }catch(Exception $e){
+            return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
+
     public function updatePlan(Request $request): JsonResponse
     {
         try{

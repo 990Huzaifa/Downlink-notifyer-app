@@ -5,7 +5,7 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Support\Str;
 
-function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
+function probe(string $url, int $durationSeconds = 60, int $timeout = 15)
 {
     $timings = [
         'ttfb_ms'   => null,
@@ -15,23 +15,27 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
     $response = null;
 
     // Request + timings
-    $response = Http::withHeaders([
-            'User-Agent' => 'DownLinkNotifyer/1.0 (+https://downlink.techvince.com)'
-        ])
-        ->timeout($timeout)
-        ->withOptions([
-            'allow_redirects' => true,
-            'on_stats' => function (\GuzzleHttp\TransferStats $stats) use (&$timings) {
-                $handler = $stats->getHandlerStats(); // cURL stats
-                // TTFB: namelookup + connect + appconnect + pretransfer + starttransfer
-                if (isset($handler['starttransfer_time'])) {
-                    $timings['ttfb_ms']  = (int) round($handler['starttransfer_time'] * 1000);
-                }
-                $timings['total_ms'] = (int) round($stats->getTransferTime() * 1000);
-            },
-        ])
-        ->get($url);
-
+        try {
+            $response = Http::withHeaders([
+                    'User-Agent' => 'DownLinkNotifyer/1.0 (+https://downlink.techvince.com)'
+                ])
+                ->timeout($timeout)
+                ->withOptions([
+                    'allow_redirects' => true,
+                    'on_stats' => function (\GuzzleHttp\TransferStats $stats) use (&$timings) {
+                        $handler = $stats->getHandlerStats(); // cURL stats
+                        // TTFB: namelookup + connect + appconnect + pretransfer + starttransfer
+                        if (isset($handler['starttransfer_time'])) {
+                            $timings['ttfb_ms']  = (int) round($handler['starttransfer_time'] * 1000);
+                        }
+                        $timings['total_ms'] = (int) round($stats->getTransferTime() * 1000);
+                    },
+                ])
+                ->get($url);
+        } catch (\Exception $e) {
+            // Agar URL hi invalid ya network issue hai
+            return false;
+        }
 
             // new retrive
                 // $psi_api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
@@ -84,26 +88,26 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
     return [
         // Status block
         'status'        => $isUp ? 'up' : 'down',
-        'status_code'   => $statusCode,
-        'last_checked_at' => $now->toDateTimeString(),
-        'next_check_at' => $nextCheckAt->toDateTimeString(),
+        'status_code'   => $statusCode ?? null,
+        'last_checked_at' => $now->toDateTimeString()  ?? null,
+        'next_check_at' => $nextCheckAt->toDateTimeString() ?? null,
 
         // Speed
-        'response_time_ms' => $timings['total_ms'],
-        'ttfb_ms'          => $timings['ttfb_ms'],
+        'response_time_ms' => $timings['total_ms'] ?? null,
+        'ttfb_ms'          => $timings['ttfb_ms']  ?? null,
 
         // Page size
-        'html_bytes'       => $htmlBytes,
-        'assets_bytes'     => $assetBytes,
-        'top_assets'       => $topAssets, // [{url, bytes}] (where available)
+        'html_bytes'       => $htmlBytes ?? 0,
+        'assets_bytes'     => $assetBytes ?? 0,
+        'top_assets'       => $topAssets ?? [], // [{url, bytes}] (where available)
 
         // Security
-        'ssl_days_left'    => $sslDaysLeft,
+        'ssl_days_left'    => $sslDaysLeft ?? null,
 
         // Raw extras
-        'final_url'        => $finalUrl,
-        'content_type'     => $contentType,
-        'content_encoding' => $encoding,
+        'final_url'        => $finalUrl ?? '',
+        'content_type'     => $contentType ?? '',
+        'content_encoding' => $encoding ?? '',
 
     ];
 }
