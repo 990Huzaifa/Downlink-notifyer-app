@@ -114,7 +114,7 @@ class SiteLinkController extends Controller
             // if status code is 200 then site is working otherwise down
 
             $metrics = probe($request->url, (int)$request->duration, 15);
-            
+            return response()->json($metrics, 200);
             $data = SiteLink::create([
                 'user_id' => $user->id,
                 'title' => $request->title,

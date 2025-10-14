@@ -34,27 +34,27 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
 
 
             // new retrive
-                $psi_api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
-                $psi_response = Http::get($psi_api_url, [
-                    'url'      => $url, // User ka URL
-                    'strategy' => 'desktop', // Ya 'mobile'
-                    // Aapko API key ki zaroorat nahi hai, agar requests limited ho
-                ]);
-                $performanceScore = null;
-                $seoScore = null;
-                $lcp = null;
-                if ($psi_response->successful()) {
-                    $data = $psi_response->json();
+                // $psi_api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+                // $psi_response = Http::get($psi_api_url, [
+                //     'url'      => $url, // User ka URL
+                //     'strategy' => 'desktop', // Ya 'mobile'
+                //     // Aapko API key ki zaroorat nahi hai, agar requests limited ho
+                // ]);
+                // $performanceScore = null;
+                // $seoScore = null;
+                // $lcp = null;
+                // if ($psi_response->successful()) {
+                //     $data = $psi_response->json();
 
-                    // Data nikalna
-                    $performanceScore = $data['lighthouseResult']['categories']['performance']['score'] * 100;
-                    $seoScore = $data['lighthouseResult']['categories']['seo']['score'] * 100;
+                //     // Data nikalna
+                //     $performanceScore = $data['lighthouseResult']['categories']['performance']['score'] * 100;
+                //     $seoScore = $data['lighthouseResult']['categories']['seo']['score'] * 100;
                     
-                    // Core Web Vitals
-                    $lcp = $data['lighthouseResult']['audits']['largest-contentful-paint']['displayValue'];
+                //     // Core Web Vitals
+                //     $lcp = $data['lighthouseResult']['audits']['largest-contentful-paint']['displayValue'];
 
-                    // ... baaqi sab metrics bhi yahan se mil jaengi.
-                }
+                //     // ... baaqi sab metrics bhi yahan se mil jaengi.
+                // }
             // new retrive end
 
 
@@ -105,18 +105,24 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 15): array
         'content_type'     => $contentType,
         'content_encoding' => $encoding,
 
-        'performanceScore' => $performanceScore,
-        'seoScore' => $seoScore,
-        'lcp' => $lcp
     ];
 }
 
 function estimateAssetsWeight(string $baseUrl, string $html, int $limit = 15, int $timeout = 10): array
 {
-    if (!$html) return [0, []];
+    // 1. Basic check for HTML
+    if (empty($html)) {
+        // Log::warning('estimateAssetsWeight: HTML is empty.', compact('baseUrl')); // Debugging ke liye log add kar sakte hain
+        return [0, []];
+    }
 
+    // 2. Asset URLs ko retrieve karo (Assuming extractAssetUrls function is correct)
     $assetUrls = extractAssetUrls($baseUrl, $html);
-    if (empty($assetUrls)) return [0, []];
+    
+    if (empty($assetUrls)) {
+        // Log::info('estimateAssetsWeight: No assets found in HTML.', compact('baseUrl')); // Debugging ke liye
+        return [0, []]; // Agar yahan 0 aa raha hai, toh masla extractAssetUrls mein hai.
+    }
 
     $assetUrls = array_slice($assetUrls, 0, $limit);
 
@@ -125,22 +131,44 @@ function estimateAssetsWeight(string $baseUrl, string $html, int $limit = 15, in
 
     foreach ($assetUrls as $aurl) {
         try {
-            // Prefer HEAD for speed; fall back to GET if needed
+            $len = 0;
+
+            // Padhai: Head request
             $head = Http::timeout($timeout)->head($aurl);
             $len  = (int) ($head->header('content-length') ?? 0);
-
-            if ($len === 0 && $head->failed()) {
-                // Some servers block HEAD; do a lightweight GET
-                $get = Http::timeout($timeout)->withHeaders(['Range' => 'bytes=0-0'])->get($aurl);
-                $len = (int) ($get->header('content-length') ?? 0);
+            
+            // Check 1: Agar HEAD request failed hai (e.g., 404/500), skip karo.
+            if ($head->failed() || $head->status() >= 400) {
+                 // Log::debug("HEAD failed for asset: {$aurl}. Status: {$head->status()}");
+                 continue; // Next asset par jao
             }
 
+            // Check 2: Agar HEAD se length 0 mili, toh lightweight GET try karo.
+            if ($len === 0) {
+                // Kuch servers HEAD ko block karte hain ya content-length nahi dete.
+                $get = Http::timeout($timeout)->withHeaders(['Range' => 'bytes=0-0'])->get($aurl);
+                $len = (int) ($get->header('content-length') ?? 0);
+                
+                // Naya Check: Agar lightweight GET mein 'Content-Range' header ho toh total size nikalen
+                $contentRange = $get->header('content-range');
+                if ($len === 0 && $contentRange) {
+                     // Content-Range: bytes 0-0/12345 (Jahan 12345 total size hai)
+                     if (preg_match('/\/\s*(\d+)$/', $contentRange, $matches)) {
+                         $len = (int) $matches[1];
+                     }
+                }
+            }
+            
+            // Final check aur store
             if ($len > 0) {
                 $total += $len;
                 $top[] = ['url' => $aurl, 'bytes' => $len];
             }
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+             // Connection time-out ya DNS failure, is asset ko ignore karo.
+             // Log::error("Connection failed for asset: {$aurl}", ['error' => $e->getMessage()]);
         } catch (\Throwable $e) {
-            // ignore single-asset failures
+            // Doosre errors ko ignore karo.
         }
     }
 
