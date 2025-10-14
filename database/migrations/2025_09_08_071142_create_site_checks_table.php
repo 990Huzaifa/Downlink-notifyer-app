@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('response_time_ms')->nullable();
             $table->integer('ssl_days_left')->nullable();
             $table->integer('html_bytes')->nullable();
-            $table->timestamp('checked_at')->index();
+            $table->timestamp('checked_at');
+            $table->timestamps();
         });
     }
 
