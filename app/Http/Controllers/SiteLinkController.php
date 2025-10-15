@@ -127,7 +127,7 @@ class SiteLinkController extends Controller
                 'user_id' => $user->id,
                 'title' => $request->title,
                 'url' => $request->url,
-                'duration' => $request->duration,
+                'duration' => $request->duration, 
                 'notify_email' => $request->notify_email,
                 'notify_sms' => $request->notify_sms,
                 'notify_push' => $request->notify_push,
@@ -163,11 +163,11 @@ class SiteLinkController extends Controller
 
             DB::beginTransaction();
             $data = SiteLink::findOrFail($id);
-            if (!$data) throw new Exception('Case not found', 404);
+            if (!$data) throw new Exception('Site not found', 404);
 
             $data->delete();
             DB::commit();
-            return response()->json(['message' => 'Case deleted successfully'], 200);
+            return response()->json(['message' => 'Site deleted successfully'], 200);
 
         }catch(QueryException $e){
             DB::rollBack();
