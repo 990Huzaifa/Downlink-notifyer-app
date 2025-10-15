@@ -26,7 +26,7 @@ class SiteLinkController extends Controller
             $status = $request->input('status', '');
             $duration = $request->input('duration', ''); //no of days
             
-            $query = SiteLink::select('site_links.*', 'site_checks.*')
+            $query = SiteLink::select('site_links.*', 'site_checks.*','site_links.id as id')
             ->where('site_links.user_id', $user->id)
             ->join('site_checks', 'site_checks.site_link_id', '=', 'site_links.id')
             ->orderBy('site_links.created_at', 'desc');
