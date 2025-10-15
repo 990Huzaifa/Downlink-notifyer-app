@@ -162,7 +162,7 @@ class SiteLinkController extends Controller
             $user = Auth::user();
 
             DB::beginTransaction();
-            $data = SiteLink::findOrFail($id);
+            $data = SiteLink::find($id);
             if (!$data) throw new Exception('Site not found', 404);
 
             $data->delete();
