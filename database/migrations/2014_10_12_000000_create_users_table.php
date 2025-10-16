@@ -18,11 +18,14 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->enum('plan',['Basic','Standard','Premium'])->default('Basic');
             $table->bigInteger('otp')->nullable();
             $table->string('fcm_id')->nullable();
             $table->string('device_id')->nullable();
+            $table->string('google_id')->nullable();
+            $table->string('facebook_id')->nullable();
+            $table->string('apple_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

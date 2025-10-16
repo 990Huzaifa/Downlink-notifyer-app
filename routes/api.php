@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('signup', [AuthController::class, 'signup']);
 Route::post('signin', [AuthController::class, 'signin']);
+Route::post('social',[AuthController::class,'socialLoginSignup']);
+Route::post('account-check',[AuthController::class,'accountCheck']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 Route::post('resend-code', [AuthController::class, 'resendCode']);

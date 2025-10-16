@@ -70,6 +70,100 @@ class AuthController extends Controller
         }
     }
 
+    public function socialLoginSignup(Request $request): JsonResponse
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'provider' => 'required|in:google,apple,facebook',
+                'email' => 'nullable|email',
+                'name' => 'required',
+                'device_id' => 'required',
+                'google_id' => 'required_if:provider,google',
+                'apple_id' => 'required_if:provider,apple',
+                'facebook_id' => 'required_if:provider,facebook',
+            ]);
+            if($validator->fails()) throw new Exception($validator->errors()->first(),422);
+
+
+            $user = null;
+            if($request->provider == 'google'){
+                $user = User::where('google_id', $request->google_id)->first();
+            }elseif($request->provider == 'apple'){
+                $user = User::where('apple_id', $request->apple_id)->first();
+            }elseif($request->provider == 'facebook'){
+                $user = User::where('facebook_id', $request->facebook_id)->first();
+            }
+
+
+            $already_registered = false;
+            if($user){
+                $already_registered = true;
+            }
+
+            // if not found the register a user with the provider data
+            DB::beginTransaction();
+            if(!$user){
+                $user = User::create([
+                    'email' => $request->email,
+                    'name' => $request->full_name,
+                    'device_id' => $request->device_id,
+                    'google_id' => $request->google_id ?? null,
+                    'apple_id' => $request->apple_id ?? null,
+                    'facebook_id' => $request->facebook_id ?? null
+                ]);
+
+            }
+            $token = $user->createToken('auth_token')->plainTextToken;
+            $user->update([
+                'google_id' => $request->google_id ?? null,
+                'apple_id' => $request->apple_id ?? null,
+                'facebook_id' => $request->facebook_id ?? null,
+                'last_login_at' => now(),
+            ]);
+            DB::commit();
+            return response()->json(['token' => $token,'user' => $user,'already_registered' => $already_registered], 200);
+        }catch(QueryException $e){
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 500);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], $e->getCode()?: 500);
+        }
+    }
+
+    public function accountCheck(Request $request): JsonResponse
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'email' => 'nullable|email',
+                'social_id' => 'nullable|string',
+            ]);
+            if($validator->fails()) throw new Exception($validator->errors()->first(),422);
+
+            $user = null;
+            if($request->email){
+                $user = User::where('email', $request->email)->first();
+            }elseif($request->social_id){
+                $user = User::where('google_id', $request->social_id)->first();
+                if(!$user){
+                    $user = User::where('apple_id', $request->social_id)->first();
+                }
+            }
+
+            if(!$user) return response()->json(['user' => null], 200);
+            // delete and create new token and set up last login at
+            $user->tokens()->delete();
+            $token = $user->createToken('auth_token')->plainTextToken;
+            $user->update(['last_login_at' => now()]);
+
+            return response()->json(['token' => $token,'user' => $user], 200);
+
+        }catch(Exception $e){
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
+
     public function verification(string $token, string $email): JsonResponse
     {
         try {
