@@ -105,7 +105,7 @@ class AuthController extends Controller
             if(!$user){
                 $user = User::create([
                     'email' => $request->email,
-                    'name' => $request->full_name,
+                    'name' => $request->name,
                     'device_id' => $request->device_id,
                     'google_id' => $request->google_id ?? null,
                     'apple_id' => $request->apple_id ?? null,
