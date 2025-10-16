@@ -75,7 +75,7 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'provider' => 'required|in:google,apple,facebook',
-                'email' => 'nullable|email|unique:users,email',
+                'email' => 'nullable|email',
                 'name' => 'required',
                 'device_id' => 'required',
                 'google_id' => 'required_if:provider,google',
