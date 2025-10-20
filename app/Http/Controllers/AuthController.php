@@ -54,11 +54,11 @@ class AuthController extends Controller
                 'remember_token' => $token,
             ]);
 
-            Mail::to($request->email)->send(new VerifyAccountMail([
-                'message' => 'Hi ' . $data->first_name . $data->last_name . ', This is your one time password',
-                'otp' => $token,
-                'is_url' => false
-            ]));
+            // Mail::to($request->email)->send(new VerifyAccountMail([
+            //     'message' => 'Hi ' . $data->first_name . $data->last_name . ', This is your one time password',
+            //     'otp' => $token,
+            //     'is_url' => false
+            // ]));
             DB::commit();
             return response()->json(['message' => 'Your account has been created successfully'], 200);
         } catch (QueryException $e) {
