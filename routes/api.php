@@ -23,6 +23,10 @@ Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 Route::post('resend-code', [AuthController::class, 'resendCode']);
 
+Route::get('/optimize-clear', function () {
+    Artisan::call('optimize:clear');
+    return 'Optimization cache cleared!';
+});
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
