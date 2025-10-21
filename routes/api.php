@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteLinkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/site-link/{id}', 'update');
         Route::delete('/site-link/{id}', 'destroy');
         Route::put('/status/site-link/{id}', 'updateStatus');
+
+    });
+
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'profile');
+        Route::post('/profile', 'updateProfile');
 
     });
         

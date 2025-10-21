@@ -23,7 +23,7 @@ class User extends Authenticatable
         'phone_verified_at',
         'email_verified_at',
         'password',
-        'plan_id',
+        'plan',
         'fcm_id',
         'device_id',
         'google_id',
