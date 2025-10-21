@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PasswordResetToken;
 use App\Services\BrevoService;
 use App\Services\SmsService;
+use Log;
 
 class AuthController extends Controller
 {
@@ -63,7 +64,9 @@ class AuthController extends Controller
 
             $brevo = new BrevoService();
             $htmlContent = "<html><body><p>Hi " . $data->name . ",</p><p>This is your account verification code: <strong>" . $token . "</strong></p></body></html>";
-            $brevo->sendMail('Account Verification Code', $data->email, $data->name, $htmlContent);
+            $res = $brevo->sendMail('Account Verification Code', $data->email, $data->name, $htmlContent);
+
+            Log::info('Brevo sendMail response: ' . print_r($res, true));
             DB::commit();
             return response()->json(['message' => 'Your account has been created successfully'], 200);
         } catch (QueryException $e) {
