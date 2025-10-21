@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Mail\VerifyAccountMail;
-use App\Services\BrevoService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -17,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OTPMail;
 use Illuminate\Support\Facades\DB;
 use App\Models\PasswordResetToken;
+use App\Services\BrevoService;
 use App\Services\SmsService;
 
 class AuthController extends Controller
