@@ -44,7 +44,8 @@ class BrevoService
             'api-key' => $this->apiKey,
             'content-type' => 'application/json',
         ])->post($this->apiUrl, $payload);
-
+        
+        Log::info('Brevo Response: ' . $response->body());
         if ($response->successful()) {
             return ['success' => true, 'response' => $response->json()];
         }
