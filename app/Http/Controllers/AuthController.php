@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\VerifyAccountMail;
+use App\Services\BrevoService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -59,6 +60,10 @@ class AuthController extends Controller
             //     'otp' => $token,
             //     'is_url' => false
             // ]));
+
+            $brevo = new BrevoService();
+            $htmlContent = "<html><body><p>Hi " . $data->name . ",</p><p>This is your account verification code: <strong>" . $token . "</strong></p></body></html>";
+            $brevo->sendMail('Account Verification Code', $data->email, $data->name, $htmlContent);
             DB::commit();
             return response()->json(['message' => 'Your account has been created successfully'], 200);
         } catch (QueryException $e) {
