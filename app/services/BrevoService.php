@@ -56,4 +56,14 @@ class BrevoService
             'status' => $response->status(),
         ];
     }
+
+    public function sendSms(string $toPhone,string $message,string $fromName = null)
+    {
+        $url = "https://api.brevo.com/v3/transactionalSMS/send";
+        $response = Http::withHeaders([
+            'accept' => 'application/json',
+            'api-key' => $this->apiKey,
+            'content-type' => 'application/json',
+        ])->post($url);
+    }
 }

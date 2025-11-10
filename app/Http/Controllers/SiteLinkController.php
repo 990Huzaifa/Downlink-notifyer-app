@@ -88,7 +88,7 @@ class SiteLinkController extends Controller
                 $request->all(),
                 [
                     'title' => 'required|string|max:255',
-                    'url' => 'required|url|max:255|unique:site_links,url',
+                    'url' => 'required|url|max:255',
                     'duration' => 'required|in:30,60,300,1800,3600,43200,86400',
                     'notify_email' => 'required|boolean',
                     'notify_sms' => 'required|boolean',
@@ -101,7 +101,6 @@ class SiteLinkController extends Controller
                     'url.required' => 'URL is required.',
                     'url.url' => 'Invalid URL format.',
                     'url.max' => 'URL may not be greater than 255 characters.',
-                    'url.unique' => 'URL already exists.',
                     'duration.required' => 'Duration is required.',
                     'duration.in' => 'Invalid duration selected.',
                     'notify_email.boolean' => 'Notify email must be true or false.',
