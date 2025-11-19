@@ -116,8 +116,8 @@ class SiteLinkController extends Controller
             DB::beginTransaction();
             // here we hit the url to test that site is working or not by their status code
             // if status code is 200 then site is working otherwise down
-            $check =$this->isValidAndAccessible($request->url);
-            if(!$check)throw new Exception('Site is Invalid', 400);
+            // $check =$this->isValidAndAccessible($request->url);
+            // if(!$check)throw new Exception('Site is Invalid', 400);
 
 
             $metrics = probe($request->url, (int)$request->duration, 15);
@@ -285,7 +285,7 @@ class SiteLinkController extends Controller
     }
 
 
-    private function isValidAndAccessible(string $url, int $timeout = 5)
+    private function isValidAndAccessible(string $url, int $timeout = 15)
     {
         // A quick check to ensure the string looks like a valid URL first
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
