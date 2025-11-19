@@ -31,7 +31,8 @@ class AuthController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required',
                 'device_id' => 'required',
-                'fcm_token' => 'required',
+                'fcm_id' => 'required',
+                'app_version' => 'required|string',
             ], [
                 'name.required' => 'Name is required',
                 'email.required' => 'Email is required',
@@ -39,7 +40,7 @@ class AuthController extends Controller
                 'email.unique' => 'Email already exists',
                 'password.required' => 'Password is required',
                 'device_id.required' => 'Device ID is required',
-                'fcm_token.required' => 'FCM Token is required',
+                'fcm_id.required' => 'FCM Token is required',
             ]);
 
             if ($validator->fails()) throw new Exception($validator->errors()->first(), 400);
@@ -52,7 +53,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'status' => 'active',
                 'device_id' => $request->device_id,
-                'fcm_token' => $request->fcm_token,
+                'fcm_id' => $request->fcm_id,
                 'remember_token' => $token,
             ]);
 
@@ -89,6 +90,8 @@ class AuthController extends Controller
                 'google_id' => 'required_if:provider,google',
                 'apple_id' => 'required_if:provider,apple',
                 'facebook_id' => 'required_if:provider,facebook',
+                'app_version' => 'required|string',
+                'fcm_id' => 'required|string',
             ]);
             if($validator->fails()) throw new Exception($validator->errors()->first(),422);
 
@@ -162,7 +165,7 @@ class AuthController extends Controller
             // delete and create new token and set up last login at
             $user->tokens()->delete();
             $token = $user->createToken('auth_token')->plainTextToken;
-            $user->update(['last_login_at' => now()]);
+            $user->update(['last_login_at' => now(),]);
 
             return response()->json(['token' => $token,'user' => $user], 200);
 
@@ -225,7 +228,7 @@ class AuthController extends Controller
             // $user->tokens()->delete();
 
             $user->update([
-                'fcm_token' => $request->fcm_token,
+                'fcm_id' => $request->fcm_id,
                 'last_login_at' => now(),
                 'device_id' => $request->device_id,
             ]);

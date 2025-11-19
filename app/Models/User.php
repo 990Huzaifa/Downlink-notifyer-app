@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'plan',
         'fcm_id',
+        'app_version',
         'device_id',
         'google_id',
         'apple_id',

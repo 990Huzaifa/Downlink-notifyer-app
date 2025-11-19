@@ -165,8 +165,8 @@ class SiteLinkController extends Controller
             if (!$data) throw new Exception('Site not found', 404);
 
             $data->delete();
-            $info = SiteCheck::where('site_link_id',$id)->first();
-            $info->delete();
+            // $info = SiteCheck::where('site_link_id',$id)->first();
+            // $info->delete();
             DB::commit();
             return response()->json(['message' => 'Site deleted successfully'], 200);
 
