@@ -95,11 +95,11 @@ class AuthController extends Controller
 
             $user = null;
             if($request->provider == 'google'){
-                $user = User::where('google_id', $request->google_id)->first();
+                $user = User::where('google_id', $request->google_id)->orWhere('email', $request->email)->first();
             }elseif($request->provider == 'apple'){
-                $user = User::where('apple_id', $request->apple_id)->first();
+                $user = User::where('apple_id', $request->apple_id)->orWhere('email', $request->email)->first();
             }elseif($request->provider == 'facebook'){
-                $user = User::where('facebook_id', $request->facebook_id)->first();
+                $user = User::where('facebook_id', $request->facebook_id)->orWhere('email', $request->email)->first();
             }
 
 
