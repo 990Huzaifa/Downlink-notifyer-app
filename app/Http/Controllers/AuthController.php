@@ -302,13 +302,13 @@ class AuthController extends Controller
                 [
                     'token' => 'required|string',
 
-                    'password' => 'nullable|string|min:8',
+                    'password' => 'nullable|string|min:6',
                 ],
                 [
                     'token.required' => 'Token required',
 
                     'password.string' => 'Password must be a string',
-                    'password.min' => 'Password must be at least 8 characters',
+                    'password.min' => 'Password must be at least 6 characters',
                 ]
             );
 
