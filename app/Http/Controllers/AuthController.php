@@ -277,11 +277,13 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            Mail::to($request->email)->send(new OTPMail([
-                'message' => 'Hi ' . $user->first_name . $user->last_name . 'This is your one time password',
-                'otp' => $token,
-                'is_url' => false
-            ],'Reset Password OTP'));
+            // Mail::to($request->email)->send(new OTPMail([
+            //     'message' => 'Hi ' . $user->first_name . $user->last_name . 'This is your one time password',
+            //     'otp' => $token,
+            //     'is_url' => false
+            // ],'Reset Password OTP'));
+
+            myMailSend($request->email, $user->first_name . $user->last_name ,'Reset Password OTP', $token);
             return response()->json([
                 'message' => 'Reset OTP sent successfully',
             ], 200);
