@@ -319,4 +319,29 @@ class SiteLinkController extends Controller
             return false;
         }
     }
+
+    public function notifyToggle($id): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = SiteLink::findOrFail($id);
+            if (!$data) {
+                throw new Exception('Record not found', 404);
+            }
+            $data->update([
+                'is_notify' => !$data->is_notify,
+            ]);
+            
+            DB::commit();
+            $message = $data->is_notify ? 'Notifications enabled' : 'Notifications disabled';
+            return response()->json($message, 200);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 422);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
 }

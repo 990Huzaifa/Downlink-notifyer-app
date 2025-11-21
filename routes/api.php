@@ -41,7 +41,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/site-link/{id}', 'update');
         Route::delete('/site-link/{id}', 'destroy');
         Route::put('/status/site-link/{id}', 'updateStatus');
-
+        Route::get('/site-notify/{id}', 'notifyToggle');
+        
     });
 
     Route::controller(ProfileController::class)->group(function () {

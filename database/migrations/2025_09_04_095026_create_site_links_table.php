@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('duration',['30','60','300','1800','3600','43200','86400']);
             $table->enum('is_active',['active','inactive'])->default('active');
             // notifyers
+            $table->boolean('is_notify')->default(true);
             $table->boolean('notify_email')->default(false);
             $table->boolean('notify_sms')->default(false);
             $table->boolean('notify_push')->default(true);
