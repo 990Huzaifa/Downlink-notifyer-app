@@ -231,7 +231,7 @@ class AuthController extends Controller
             // Conditions
             if (!User::where('email', $request->email)->exists())throw new Exception('Invalid email address or password', 400);
 
-
+            DB::beginTransaction();
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password)) throw new Exception('Invalid email address or password', 400);
             $user->tokens()->delete();
@@ -244,9 +244,10 @@ class AuthController extends Controller
                 'last_login_at' => now(),
                 'device_id' => $request->device_id,
             ]);
-            
+            DB::commit();
             return response()->json(['token' => $token, 'user' => $user], 200);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
         }
     }
