@@ -283,4 +283,3 @@ function myMailSend($to, $name, $subject, $message, $link = null, $data = null){
     }
     return true;
 }
-
