@@ -117,12 +117,13 @@ class AuthController extends Controller
                 $user = User::create([
                     'email' => $request->email,
                     'name' => $request->name,
-                    'device_id' => $request->device_id,
                     'google_id' => $request->google_id ?? null,
                     'apple_id' => $request->apple_id ?? null,
                     'facebook_id' => $request->facebook_id ?? null,
                     'fcm_id' => $request->fcm_id,
+                    'ip' => $request->ip(),
                     'app_version' => $request->app_version,
+                    'device_id' => $request->device_id,
                 ]);
 
             }
@@ -133,6 +134,7 @@ class AuthController extends Controller
                 'facebook_id' => $request->facebook_id ?? null,
                 'last_login_at' => now(),
                 'fcm_id' => $request->fcm_id,
+                'ip' => $request->ip(),
                 'app_version' => $request->app_version,
                 'device_id' => $request->device_id,
             ]);
@@ -170,7 +172,7 @@ class AuthController extends Controller
             // delete and create new token and set up last login at
             $user->tokens()->delete();
             $token = $user->createToken('auth_token')->plainTextToken;
-            $user->update(['last_login_at' => now(),'fcm_id' => $request->fcm_id,'app_version' => $request->app_version,'device_id' => $request->device_id,]);
+            $user->update(['last_login_at' => now(),'fcm_id' => $request->fcm_id, 'ip' => $request->ip(),'app_version' => $request->app_version,'device_id' => $request->device_id,]);
 
             return response()->json(['token' => $token,'user' => $user], 200);
 
@@ -234,6 +236,8 @@ class AuthController extends Controller
 
             $user->update([
                 'fcm_id' => $request->fcm_id,
+                'ip' => $request->ip(),
+                'app_version' => $request->app_version,
                 'last_login_at' => now(),
                 'device_id' => $request->device_id,
             ]);
