@@ -127,6 +127,8 @@ class AuthController extends Controller
                 ]);
 
             }
+            // delete previous tokens
+            $user->tokens()->delete();
             $token = $user->createToken('auth_token')->plainTextToken;
             $user->update([
                 'google_id' => $request->google_id ?? null,
@@ -232,7 +234,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password)) throw new Exception('Invalid email address or password', 400);
-            // $user->tokens()->delete();
+            $user->tokens()->delete();
 
             $user->update([
                 'fcm_id' => $request->fcm_id,
