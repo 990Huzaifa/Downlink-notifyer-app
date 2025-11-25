@@ -234,7 +234,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password)) throw new Exception('Invalid email address or password', 400);
-            $user->tokens()->delete();
+            
 
             $user->update([
                 'fcm_id' => $request->fcm_id,
@@ -243,7 +243,7 @@ class AuthController extends Controller
                 'last_login_at' => now(),
                 'device_id' => $request->device_id,
             ]);
-
+            $user->tokens()->delete();
             $token = $user->createToken('auth-token')->plainTextToken; 
             return response()->json(['token' => $token, 'user' => $user], 200);
         }catch(Exception $e){
