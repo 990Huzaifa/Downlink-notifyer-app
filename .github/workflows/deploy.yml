@@ -14,6 +14,9 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@v2
 
+      - name: Remove .git folder
+        run: rm -rf .git
+
       - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
@@ -22,26 +25,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /
           exclude: |
-            .git
-            .git/
-            .git/**
-            **/.git
-            **/.git/
-            **/.git/**
-            **/.github/**
-            .git/objects/pack/*
-            **/.git/objects/pack/*
-            **/.git/objects/pack/**
             **/node_modules/**
             **/.env
-            node_modules/*
             vendor/*
             storage/*
             resources/views/*
             bootstrap/cache/*
             public/*
             tests/*
-            .env
             .git-ftp-*
             *.md
             composer.json
