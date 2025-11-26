@@ -42,6 +42,10 @@ jobs:
         server-dir: /
         exclude: |
           .git*
+          **/.git**
+          **/.git*/**
+          **/.github**
+          **/.env
           node_modules/*
           vendor/*
           storage/*
