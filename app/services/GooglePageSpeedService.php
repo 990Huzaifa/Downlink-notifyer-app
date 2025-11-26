@@ -9,9 +9,6 @@ class GooglePageSpeedService
 
     protected const PSI_BASE_URL = 'https://www.googleapis.com/pagespeedwidgets/v5/runPagespeed';
 
-    /**
-     * The base URL for the Chrome UX Report API.
-     */
     protected const CRUX_BASE_URL = 'https://chromeuxreport.googleapis.com/v1/records';
 
     protected string $apiKey;
