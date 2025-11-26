@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class GooglePageSpeedService
 {
-    /**
-     * The base URL for the PageSpeed Insights API.
-     */
+
     protected const PSI_BASE_URL = 'https://www.googleapis.com/pagespeedwidgets/v5/runPagespeed';
 
     /**
@@ -84,5 +82,5 @@ class GooglePageSpeedService
             return null;
         }
     }
-    
+
 }
