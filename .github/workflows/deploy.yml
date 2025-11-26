@@ -25,9 +25,9 @@ jobs:
     #   run: composer install
 
     #Clear Laravel Cache
-    - name: Clear Laravel Cache
-      run: |
-        php artisan optimize:clear
+    # - name: Clear Laravel Cache
+    #   run: |
+    #     php artisan optimize:clear
 
     # Deploy files via FTP
     - name: Sync files
