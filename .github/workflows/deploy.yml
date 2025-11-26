@@ -24,13 +24,10 @@ jobs:
     # - name: Install Composer Dependencies
     #   run: composer install
 
-    # Clear Laravel Cache
-    # - name: Clear Laravel Cache
-    #   run: |
-    #     php artisan cache:clear
-    #     php artisan config:clear
-    #     php artisan route:clear
-    #     php artisan view:clear
+    #Clear Laravel Cache
+    - name: Clear Laravel Cache
+      run: |
+        php artisan optimize:clear
 
     # Deploy files via FTP
     - name: Sync files
