@@ -38,22 +38,8 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: /
         exclude: |
-         .git/
-         .git/**
-         **/.git/**
-         **/.github/**
-         **/node_modules/**
-         **/.env
-         node_modules/*
-         vendor/*
-         storage/*
-         resources/views/*
-         bootstrap/cache/*
-         public/*
-         tests/*
-         .env
-         .git-ftp-*
-         *.md
-         composer.json
-         package.json
-         composer.lock
+          vendor/*
+          public/*
+        clean: false
+        force: false
+        verbose: true
