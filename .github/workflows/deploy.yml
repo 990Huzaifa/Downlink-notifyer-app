@@ -11,35 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the code
-    - name: Get latest code
-      uses: actions/checkout@v2
+      - name: Get latest code
+        uses: actions/checkout@v2
 
-    # Install PHP and dependencies
-    # - name: Set up PHP
-    #   uses: shivammathur/setup-php@v2
-    #   with:
-    #     php-version: '8.2'
-
-    # - name: Install Composer Dependencies
-    #   run: composer install
-
-    #Clear Laravel Cache
-    # - name: Clear Laravel Cache
-    #   run: |
-    #     php artisan optimize:clear
-
-    # Deploy files via FTP
-    - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.0.0
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /
-        exclude: |
-          vendor/*
-          public/*
-        clean: false
-        force: false
-        verbose: true
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /
+          exclude: |
+            .git
+            .git/
+            .git/**
+            **/.git
+            **/.git/
+            **/.git/**
+            **/.github/**
+            .git/objects/pack/*
+            **/.git/objects/pack/*
+            **/.git/objects/pack/**
+            **/node_modules/**
+            **/.env
+            node_modules/*
+            vendor/*
+            storage/*
+            resources/views/*
+            bootstrap/cache/*
+            public/*
+            tests/*
+            .env
+            .git-ftp-*
+            *.md
+            composer.json
+            package.json
+            composer.lock
