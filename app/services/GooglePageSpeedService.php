@@ -61,7 +61,6 @@ class GooglePageSpeedService
         }
     }
 
-
     public function getCruxData(string $originOrUrl): ?array
     {
         try {
