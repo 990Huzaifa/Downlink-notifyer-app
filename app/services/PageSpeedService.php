@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
-class GooglePageSpeedService
+class PageSpeedService
 {
 
     protected const PSI_BASE_URL = 'https://www.googleapis.com/pagespeedwidgets/v5/runPagespeed';
