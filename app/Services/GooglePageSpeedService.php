@@ -114,6 +114,9 @@ class GooglePageSpeedService
         return [
             'scores' => $scores,
             // 'web_vitals' => $webVitals,
+            'raw' => [
+                'psi' => $psi,
+            ]
         ];
     }
 
