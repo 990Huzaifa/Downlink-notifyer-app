@@ -24,33 +24,27 @@ class GooglePageSpeedService
     public function getPageSpeedData(string $url, string $strategy = 'desktop'): ?array
     {
 
-        $categories = [
-            'SEO', 
-            'PERFORMANCE', 
-            'BEST_PRACTICES', 
-            'ACCESSIBILITY',
-        ];
+        $categories = ['SEO','PERFORMANCE','BEST_PRACTICES','ACCESSIBILITY'];
         try {
-            $response = Http::get(self::PSI_BASE_URL, [
-                'url' => $url,
+            $query = http_build_query([
+                'url'      => $url,
                 'strategy' => $strategy,
-                'key' => $this->apiKey,
-                'category' => $categories,
-                // Add fields to limit the data returned for performance
+                'key'      => $this->apiKey,
             ]);
 
-            // Check if the request was successful (HTTP status 200)
-            if ($response->successful()) {
-                return $response->json();
+            // manually append categories
+            foreach ($categories as $cat) {
+                $query .= '&category=' . $cat;
             }
 
-            // Log error or handle failure case
-            logger()->error('PageSpeed Insights API call failed', [
-                'status' => $response->status(),
-                'response' => $response->body()
-            ]);
+            // Add fields EXACTLY LIKE POSTMAN
+            $query .= '&fields=loadingExperience,lighthouseResult.categories';
 
-            return null;
+            $fullUrl = self::PSI_BASE_URL . '?' . $query;
+
+            $response = Http::get($fullUrl);
+
+            return $response->json();
         } catch (\Exception $e) {
             logger()->error('PageSpeed Insights API exception', ['error' => $e->getMessage()]);
             return null;
