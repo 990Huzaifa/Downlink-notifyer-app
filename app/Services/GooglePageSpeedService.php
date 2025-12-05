@@ -37,7 +37,6 @@ class GooglePageSpeedService
                 'key' => $this->apiKey,
                 'category' => $categories,
                 // Add fields to limit the data returned for performance
-                'fields' => 'loadingExperience,lighthouseResult.categories',
             ]);
 
             // Check if the request was successful (HTTP status 200)
