@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 class GooglePageSpeedService
 {
 
-    protected const PSI_BASE_URL = 'https://www.googleapis.com/pagespeedwidgets/v5/runPagespeed';
+    protected const PSI_BASE_URL = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
 
     /**
      * The base URL for the Chrome UX Report API.
