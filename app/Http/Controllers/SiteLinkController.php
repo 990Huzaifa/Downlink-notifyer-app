@@ -145,6 +145,7 @@ class SiteLinkController extends Controller
                 'html_bytes'       => $metrics['html_bytes'],
                 'assets_bytes'       => $metrics['assets_bytes'],
                 'checked_at' => $metrics['last_checked_at'],
+                'scores' => json_encode($pageSpeedData['scores']) ?? null,
             ]);
 
             DB::commit();

@@ -16,6 +16,8 @@ class SiteCheck extends Model {
         'ssl_days_left',
         'html_bytes',
         'assets_bytes',
+        'scores',
+        'web_vitals',
         'checked_at',
     ];
 
