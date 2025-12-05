@@ -29,7 +29,6 @@ class GooglePageSpeedService
             'PERFORMANCE', 
             'BEST_PRACTICES', 
             'ACCESSIBILITY',
-            // 'PWA' is also available if needed
         ];
         try {
             $response = Http::get(self::PSI_BASE_URL, [
@@ -88,9 +87,9 @@ class GooglePageSpeedService
     public function getCombinedData(string $url): ?array
     {
         $psi = $this->getPageSpeedData($url);
-        $crux = $this->getCruxData($url);
+        // $crux = $this->getCruxData($url);
 
-        if (!$psi && !$crux) return null;
+        // if (!$psi && !$crux) return null;
 
         // Extract Lighthouse category scores (PSI)
         $lighthouse = $psi['lighthouseResult']['categories'] ?? [];
@@ -105,16 +104,16 @@ class GooglePageSpeedService
         // Extract CRUX metrics (FCP, LCP, CLS, FID)
         $cruxMetrics = $crux['record']['metrics'] ?? [];
 
-        $webVitals = [
-            'fcp' => $cruxMetrics['first_contentful_paint']['percentiles']['p75'] ?? null,
-            'lcp' => $cruxMetrics['largest_contentful_paint']['percentiles']['p75'] ?? null,
-            'cls' => $cruxMetrics['cumulative_layout_shift']['percentiles']['p75'] ?? null,
-            'fid' => $cruxMetrics['first_input_delay']['percentiles']['p75'] ?? null,
-        ];
+        // $webVitals = [
+        //     'fcp' => $cruxMetrics['first_contentful_paint']['percentiles']['p75'] ?? null,
+        //     'lcp' => $cruxMetrics['largest_contentful_paint']['percentiles']['p75'] ?? null,
+        //     'cls' => $cruxMetrics['cumulative_layout_shift']['percentiles']['p75'] ?? null,
+        //     'fid' => $cruxMetrics['first_input_delay']['percentiles']['p75'] ?? null,
+        // ];
 
         return [
             'scores' => $scores,
-            'web_vitals' => $webVitals,
+            // 'web_vitals' => $webVitals,
         ];
     }
 
