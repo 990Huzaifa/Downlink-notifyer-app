@@ -252,7 +252,7 @@ class PaymentController extends Controller
             if ($checkSub) {
                 $caseData = 'upgrade';
             }
-            Log::info('sub: ' . $checkSub);
+            
             Log::info('Google Verification Case: ' . $caseData);
             $productId = $request->input('product_id');
             $parentId = $request->input('parent_id');
