@@ -252,7 +252,8 @@ class PaymentController extends Controller
             if ($checkSub) {
                 $caseData = 'upgrade';
             }
-
+            Log::info('sub: ' . $checkSub);
+            Log::info('Google Verification Case: ' . $caseData);
             $productId = $request->input('product_id');
             $parentId = $request->input('parent_id');
             $purchaseToken = $request->input('token');
@@ -284,7 +285,6 @@ class PaymentController extends Controller
             }
             if($caseData == 'upgrade'){
                 DB::transaction(function () use ($user, $productId, $verificationData) {
-
                     $user->subscription()->update([
                         'plan'              => $productId,
                         'platform'          => "google",
