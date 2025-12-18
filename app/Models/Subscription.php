@@ -15,6 +15,7 @@ class Subscription extends Model
         'platform',
         'transaction_id',
         'status',
+        'canceled_at',
         'expires_at',
     ];
 }
