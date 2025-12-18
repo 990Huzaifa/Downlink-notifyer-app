@@ -335,7 +335,6 @@ class PaymentController extends Controller
         }
     }
 
-
     // google verify functions end
 
     // new functions here
@@ -362,18 +361,6 @@ class PaymentController extends Controller
             // 🎯 PLAN MAPPING
             // ============================
             
-            $planConfig = [
-                'basic-credt-monthly'      => ['credits' => 10,  'type' => 'credits_monthly', 'duration' => 'monthly'],
-                'basic-credt-yearly'       => ['credits' => 10,  'type' => 'credits_annual',  'duration' => 'yearly'],
-                'unlimited-credt-monthly'  => ['credits' => 0,   'type' => 'unlimited',       'duration' => 'monthly'],
-                'unlimited-credt-yearly'   => ['credits' => 0,   'type' => 'unlimited',       'duration' => 'yearly'],
-                'basic-cred-monthly'      => ['credits' => 10,  'type' => 'credits_monthly', 'duration' => 'monthly'],
-                'basic-cred-yearly'       => ['credits' => 10,  'type' => 'credits_annual',  'duration' => 'yearly'],
-                'unlimited-cred-monthly'  => ['credits' => 0,   'type' => 'unlimited',       'duration' => 'monthly'],
-                'unlimited-cred-yearly'   => ['credits' => 0,   'type' => 'unlimited',       'duration' => 'yearly'],
-
-            ];
-
             
             $checkSub = $user->subscriptions()->where('platform', 'google')->where('user_id', $user->id)->first();
             $caseData = 'new';
@@ -397,137 +384,29 @@ class PaymentController extends Controller
             $filterData = $this->filter($filterData);
             $verificationData = array_merge($verificationData, $filterData);
             
-            $plan = $planConfig[$productId] ?? null;
-
-            if (!$plan) {
-                return response()->json(['error' => 'Unknown product ID'], 400);
-            }
-
             // db transaction start here
             if($caseData == 'new'){
-                DB::transaction(function () use ($user, $plan, $productId, $verificationData) {
-                        // 🔹 Get or Create Wallet
-                        $wallet = $user->wallet;
-
-                        // 🔹 Handle Credit-based Plans
-                        if (in_array($plan['type'], ['credits_monthly', 'credits_annual'])) {
-
-                            $wallet->unlimited_active = false;
-                            $wallet->paid_credits = $plan['credits']; // Add 10 now (monthly release)
-                            $wallet->save();
-
-                            CreditsTransaction::create([
-                                'user_id'  => $user->id,
-                                'type'     => 'plan_release',
-                                'credits'  => $plan['credits'],
-                                'source'   => 'subscription',
-                                'ref' => 'purchased successfully',
-                            ]);
-
-                            Subscription::Create([
-                                    'user_id'           => $user->id,
-                                    'plan'              => $productId,
-                                    'platform'          => "google",
-                                    'credits_per_month' => $plan['credits'],
-                                    'released_credits'  => ($plan['type'] === 'credits_annual' ? 10 : 0),
-                                    'total_credits'     => ($plan['type'] === 'credits_annual' ? 120 : 0),
-                                    'renewal_period'    => $plan['duration'],
-                                    'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
-                                    'status'            => 'active',
-                                    'expires_at'        => $verificationData['expiry'],
-                                    'last_released_at'  => ($plan['type'] === 'credits_annual' ? Carbon::now() : null),
-                            ]);
-
-                        } 
-                        // 🔹 Handle Unlimited Plans
-                        else if ($plan['type'] === 'unlimited') {
-
-                            $wallet->unlimited_active = true;
-                            $wallet->save();
-
-                            Subscription::Create([
-                                    'user_id'           => $user->id,
-                                    'plan'              => $productId,
-                                    'platform'          => "google",
-                                    'credits_per_month' => 0,
-                                    'released_credits'  => 0,
-                                    'total_credits'     => 0,
-                                    'status'            => 'active',
-                                    'expires_at'        => $verificationData['expiry'],
-                                    'renewal_period'    => $plan['duration'],
-                                    'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
-                                ]);
-
-                            CreditsTransaction::create([
-                                'user_id'  => $user->id,
-                                'type'     => 'plan_release',
-                                'credits'  => 0,
-                                'source'   => 'subscription',
-                                'ref' => 'purchased successfully',
-                            ]);
-                        }
-                    });
+                DB::transaction(function () use ($user, $productId, $verificationData) {
+                    Subscription::Create([
+                        'user_id'           => $user->id,
+                        'plan'              => $productId,
+                        'platform'          => "google",
+                        'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
+                        'status'            => 'active',
+                        'expires_at'        => $verificationData['expiry'],
+                    ]);
+                });
             }
             if($caseData == 'upgrade'){
-                DB::transaction(function () use ($user, $plan, $productId, $verificationData) {
-                    // 🔹 Get or Create Wallet
-                    $wallet = $user->wallet;
+                DB::transaction(function () use ($user, $productId, $verificationData) {
 
-                    // 🔹 Handle Credit-based Plans
-                    if (in_array($plan['type'], ['credits_monthly', 'credits_annual'])) {
-
-                        $wallet->unlimited_active = false;
-                        $wallet->paid_credits = $plan['credits']; // Add 10 now (monthly release)
-                        $wallet->save();
-
-                        CreditsTransaction::create([
-                            'user_id'  => $user->id,
-                            'type'     => 'plan_release',
-                            'credits'  => $plan['credits'],
-                            'source'   => 'subscription',
-                            'ref' => 'upgraded successfully',
-                        ]);
-
-                        $user->subscriptions()->update([
+                    $user->subscriptions()->update([
                                 'plan'              => $productId,
                                 'platform'          => "google",
-                                'credits_per_month' => $plan['credits'],
-                                'released_credits'  => ($plan['type'] === 'credits_annual' ? 10 : 0),
-                                'total_credits'     => ($plan['type'] === 'credits_annual' ? 120 : 0),
-                                'renewal_period'    => $plan['duration'],
                                 'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
                                 'status'            => 'active',
                                 'expires_at'        => $verificationData['expiry'],
-                                'last_released_at'  => ($plan['type'] === 'credits_annual' ? Carbon::now() : null),
                         ]);
-
-                    } 
-                    // 🔹 Handle Unlimited Plans
-                    else if ($plan['type'] === 'unlimited') {
-
-                        $wallet->unlimited_active = true;
-                        $wallet->save();
-
-                        $user->subscriptions()->update([
-                                'plan'              => $productId,
-                                'platform'          => "google",
-                                'credits_per_month' => 0,
-                                'released_credits'  => 0,
-                                'total_credits'     => 0,
-                                'status'            => 'active',
-                                'expires_at'        => $verificationData['expiry'],
-                                'renewal_period'    => $plan['duration'],
-                                'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
-                            ]);
-
-                        CreditsTransaction::create([
-                            'user_id'  => $user->id,
-                            'type'     => 'plan_release',
-                            'credits'  => 0,
-                            'source'   => 'subscription',
-                            'ref' => 'upgraded successfully',
-                        ]);
-                    }
                 });
             }
             return response()->json(['message' => 'Payment verified successfully'], 200);
@@ -539,7 +418,6 @@ class PaymentController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
 
     private function filter(array $data){
         
@@ -560,9 +438,6 @@ class PaymentController extends Controller
 
         return $data;
     }
-
-
-
 
     public function googleCancel(Request $request) {
 

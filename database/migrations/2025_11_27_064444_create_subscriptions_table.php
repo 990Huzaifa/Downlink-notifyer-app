@@ -15,14 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->enum('plan', ['basic_cred_monthly','basic_cred_yearly','unlimited_cred_monthly','unlimited_cred_yearly','basic-credt-monthly','basic-credt-yearly','unlimited-credt-monthly','unlimited-credt-yearly','basic-cred-monthly','basic-cred-yearly','unlimited-cred-monthly','unlimited-cred-yearly']);
+            $table->string('plan', 255);
             $table->enum('platform', ['google', 'apple']);
-            $table->enum('status', ['active', 'expired', 'canceled']);
-            $table->enum('renewal_period', ['monthly','yearly']);
+            $table->enum('status', ['active', 'expired']);
             $table->longText('transaction_id')->nullable();
             $table->timestamp('expires_at')->nullable();
             $table->timestamp('canceled_at')->nullable();
-            $table->timestamp('last_released_at')->nullable();
             $table->timestamps();
         });
     }
