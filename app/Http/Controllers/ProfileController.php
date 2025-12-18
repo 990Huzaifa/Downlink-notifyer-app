@@ -56,7 +56,7 @@ class ProfileController extends Controller
     {
         try{
             $user = Auth::user();
-            $plan = $user->subscriptions() ?? null;
+            $plan = $user->subscriptions()->where('status', 'active') ?? null;
             return response()->json(['plan' => $plan], 200);
         }catch(Exception $e){
             return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
