@@ -245,9 +245,9 @@ class PaymentController extends Controller
             // ============================
             // 🎯 PLAN MAPPING
             // ============================
-            
-            
-            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id);
+
+
+            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id)->first();
             $caseData = 'new';
             if ($checkSub) {
                 $caseData = 'upgrade';
