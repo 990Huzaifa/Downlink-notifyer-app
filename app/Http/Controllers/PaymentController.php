@@ -50,144 +50,29 @@ class PaymentController extends Controller
             }
             // return response()->json($caseData);
 
-            // ============================
-            // 🎯 PLAN MAPPING
-            // ============================
-            $planConfig = [
-                'basic_cred_monthly'      => ['credits' => 10,  'type' => 'credits_monthly', 'duration' => 'monthly'],
-                'basic_cred_yearly'       => ['credits' => 10,  'type' => 'credits_annual',  'duration' => 'yearly'],
-                'unlimited_cred_monthly'  => ['credits' => 0,   'type' => 'unlimited',       'duration' => 'monthly'],
-                'unlimited_cred_yearly'   => ['credits' => 0,   'type' => 'unlimited',       'duration' => 'yearly'],
-            ];
 
             $productId = $latestReceipt['productId'];
-            $plan = $planConfig[$productId] ?? null;
-            if (!$plan) {
-                return response()->json(['error' => 'Unknown product ID'], 400);
-            }
 
             $expiresAt = $latestReceipt['expireDateFormatted'];
             // transaction
             if($caseData == 'new'){
-                DB::transaction(function () use ($user, $plan, $productId, $expiresAt, $latestReceipt) {
-                    // 🔹 Get or Create Wallet
-                    $wallet = $user->wallet;
-
-                    // 🔹 Handle Credit-based Plans
-                    if (in_array($plan['type'], ['credits_monthly', 'credits_annual'])) {
-
-                        $wallet->unlimited_active = false;
-                        $wallet->paid_credits = $plan['credits']; // Add 10 now (monthly release)
-                        $wallet->save();
-
-                        CreditsTransaction::create([
-                            'user_id'  => $user->id,
-                            'type'     => 'plan_release',
-                            'credits'  => $plan['credits'],
-                            'source'   => 'subscription',
-                            'ref' => 'purchased successfully',
-                        ]);
-
-                        Subscription::Create([
-                                'user_id'           => $user->id,
-                                'plan'              => $productId,
-                                'credits_per_month' => $plan['credits'],
-                                'released_credits'  => ($plan['type'] === 'credits_annual' ? 10 : 0),
-                                'total_credits'     => ($plan['type'] === 'credits_annual' ? 120 : 0),
-                                'renewal_period'    => $plan['duration'],
-                                'transaction_id'    => $latestReceipt['transactionId'],
-                                'status'            => 'active',
-                                'expires_at'        => $expiresAt,
-                                'last_released_at'  => ($plan['type'] === 'credits_annual' ? Carbon::now() : null),
-                        ]);
-
-                    } 
-                    // 🔹 Handle Unlimited Plans
-                    else if ($plan['type'] === 'unlimited') {
-
-                        $wallet->unlimited_active = true;
-                        $wallet->save();
-
-                        Subscription::Create([
-                                'user_id'           => $user->id,
-                                'plan'              => $productId,
-                                'credits_per_month' => 0,
-                                'released_credits'  => 0,
-                                'total_credits'     => 0,
-                                'status'            => 'active',
-                                'expires_at'        => $expiresAt,
-                                'renewal_period'    => $plan['duration'],
-                                'transaction_id'    => $latestReceipt['transactionId'],
-                            ]);
-
-                        CreditsTransaction::create([
-                            'user_id'  => $user->id,
-                            'type'     => 'plan_release',
-                            'credits'  => 0,
-                            'source'   => 'subscription',
-                            'ref' => 'purchased successfully',
-                        ]);
-                    }
+                DB::transaction(function () use ($user, $productId, $expiresAt, $latestReceipt) {
+                    Subscription::Create([
+                            'user_id'           => $user->id,
+                            'plan'              => $productId,
+                            'transaction_id'    => $latestReceipt['transactionId'],
+                            'status'            => 'active',
+                            'expires_at'        => $expiresAt,
+                    ]);
                 });
             }
             if($caseData == 'upgrade'){
-                DB::transaction(function () use ($user, $plan, $productId, $expiresAt, $latestReceipt) {
-
-                    // 🔹 Get or Create Wallet
-                    $wallet = $user->wallet;
-
-                    // 🔹 Handle Credit-based Plans
-                    if (in_array($plan['type'], ['credits_monthly', 'credits_annual'])) {
-
-                        $wallet->unlimited_active = false;
-                        $wallet->paid_credits = $plan['credits']; // Add 10 now (monthly release)
-                        $wallet->save();
-
-                        CreditsTransaction::create([
-                            'user_id'  => $user->id,
-                            'type'     => 'plan_release',
-                            'credits'  => $plan['credits'],
-                            'source'   => 'subscription',
-                            'ref' => 'upgraded successfully',
-                        ]);
-
-                        $user->subscriptions()->where('transaction_id', $latestReceipt['originalTransactionId'])->update([
-                                'plan'              => $productId,
-                                'credits_per_month' => $plan['credits'],
-                                'released_credits'  => ($plan['type'] === 'credits_annual' ? 10 : 0),
-                                'total_credits'     => ($plan['type'] === 'credits_annual' ? 120 : 0),
-                                'renewal_period'    => $plan['duration'],
-                                'status'            => 'active',
-                                'expires_at'        => $expiresAt,
-                                'last_released_at'  => ($plan['type'] === 'credits_annual' ? Carbon::now() : null),
-                        ]);
-
-                    } 
-                    // 🔹 Handle Unlimited Plans
-                    else if ($plan['type'] === 'unlimited') {
-
-                        $wallet->unlimited_active = true;
-                        $wallet->save();
-
-                        $user->subscriptions()->where('transaction_id', $latestReceipt['originalTransactionId'])->update([
-                                'plan'           => $productId,
-                                'credits_per_month' => 0,
-                                'released_credits' => 0,
-                                'total_credits' => 0,
-                                'status'         => 'active',
-                                'expires_at'     => $expiresAt,
-                                'renewal_period' => $plan['duration'],
-                            ]
-                        );
-
-                        CreditsTransaction::create([
-                            'user_id'  => $user->id,
-                            'type'     => 'plan_release',
-                            'credits'  => 0,
-                            'source'   => 'subscription',
-                            'ref' => 'upgraded successfully',
-                        ]);
-                    }
+                DB::transaction(function () use ($user, $productId, $expiresAt, $latestReceipt) {
+                    $user->subscriptions()->where('transaction_id', $latestReceipt['originalTransactionId'])->update([
+                        'plan'              => $productId,
+                        'status'            => 'active',
+                        'expires_at'        => $expiresAt,
+                    ]);
                 });
             }
 
@@ -373,7 +258,7 @@ class PaymentController extends Controller
             $purchaseToken = $request->input('token');
             $verificationData = $this->verifyFromGoogle($purchaseToken, $parentId);
             if(!$verificationData) return response()->json(['error' => 'Invalid Purchase'], 400);
-            Log::info('Google Verification Data: ' . json_encode($verificationData));
+            // Log::info('Google Verification Data: ' . json_encode($verificationData));
             $account_id = $verificationData['obfuscatedExternalAccountId']  ?? $user->id;
             $filterData = [
                 "start"=> $verificationData['startTimeMillis'],
