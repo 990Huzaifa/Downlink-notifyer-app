@@ -247,7 +247,7 @@ class PaymentController extends Controller
             // ============================
 
 
-            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id)->first();
+            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id);
             $caseData = 'new';
             if ($checkSub) {
                 $caseData = 'upgrade';
@@ -286,12 +286,12 @@ class PaymentController extends Controller
                 DB::transaction(function () use ($user, $productId, $verificationData) {
 
                     $user->subscription()->update([
-                                'plan'              => $productId,
-                                'platform'          => "google",
-                                'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
-                                'status'            => 'active',
-                                'expires_at'        => $verificationData['expiry'],
-                        ]);
+                        'plan'              => $productId,
+                        'platform'          => "google",
+                        'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
+                        'status'            => 'active',
+                        'expires_at'        => $verificationData['expiry'],
+                    ]);
                 });
             }
             return response()->json(['message' => 'Payment verified successfully'], 200);
