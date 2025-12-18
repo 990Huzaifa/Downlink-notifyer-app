@@ -51,4 +51,15 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Failed to update profile, please try again later.'], 500);
         }
     }
+
+    public function checkPlan(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $plan = $user->subscriptions() ?? null;
+            return response()->json(['plan' => $plan], 200);
+        }catch(Exception $e){
+            return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
 }
