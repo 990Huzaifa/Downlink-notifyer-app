@@ -254,6 +254,7 @@ class PaymentController extends Controller
             }
             
             Log::info('Google Verification Case: ' . $caseData);
+            
             $productId = $request->input('product_id');
             $parentId = $request->input('parent_id');
             $purchaseToken = $request->input('token');
