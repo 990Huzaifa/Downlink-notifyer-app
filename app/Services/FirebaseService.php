@@ -36,10 +36,10 @@ class FirebaseService
 
             $result = $messaging->send($message);
             
-            Log::info('FCM notification sent successfully', [
-                'token' => $fcmToken,
-                'result' => $result
-            ]);
+            // Log::info('FCM notification sent successfully', [
+            //     'token' => $fcmToken,
+            //     'result' => $result
+            // ]);
             
             return [
                 'success' => true,
@@ -47,10 +47,10 @@ class FirebaseService
             ];
             
         } catch (\Exception $e) {
-            Log::error('FCM notification failed', [
-                'token' => $fcmToken,
-                'error' => $e->getMessage()
-            ]);
+            // Log::error('FCM notification failed', [
+            //     'token' => $fcmToken,
+            //     'error' => $e->getMessage()
+            // ]);
             
             return [
                 'success' => false,
@@ -73,11 +73,11 @@ class FirebaseService
 
             $result = $messaging->sendMulticast($message, $fcmTokens);
             
-            Log::info('FCM multicast notification sent', [
-                'tokens_count' => count($fcmTokens),
-                'success_count' => $result->successes()->count(),
-                'failure_count' => $result->failures()->count()
-            ]);
+            // Log::info('FCM multicast notification sent', [
+            //     'tokens_count' => count($fcmTokens),
+            //     'success_count' => $result->successes()->count(),
+            //     'failure_count' => $result->failures()->count()
+            // ]);
             
             return [
                 'success' => true,
@@ -87,10 +87,10 @@ class FirebaseService
             ];
             
         } catch (\Exception $e) {
-            Log::error('FCM multicast notification failed', [
-                'tokens_count' => count($fcmTokens),
-                'error' => $e->getMessage()
-            ]);
+            // Log::error('FCM multicast notification failed', [
+            //     'tokens_count' => count($fcmTokens),
+            //     'error' => $e->getMessage()
+            // ]);
             
             return [
                 'success' => false,
