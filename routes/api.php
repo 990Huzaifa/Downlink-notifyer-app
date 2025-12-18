@@ -53,6 +53,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'profile');
         Route::post('/profile', 'updateProfile');
+        Route::get('/check-plan', 'checkPlan');
+
 
     });
 
