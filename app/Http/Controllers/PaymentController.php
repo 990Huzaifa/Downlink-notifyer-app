@@ -247,14 +247,14 @@ class PaymentController extends Controller
             // ============================
 
 
-            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id);
+            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id)->first();
             $caseData = 'new';
             if ($checkSub) {
                 $caseData = 'upgrade';
             }
             
             Log::info('Google Verification Case: ' . $caseData);
-            
+
             $productId = $request->input('product_id');
             $parentId = $request->input('parent_id');
             $purchaseToken = $request->input('token');
