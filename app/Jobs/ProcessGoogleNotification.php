@@ -100,6 +100,41 @@ class ProcessGoogleNotification implements ShouldQueue
         
         switch ((int)$type) {
             case 4: // SUBSCRIPTION_PURCHASED (New subscription) insert new subscription but first check if already exists
+
+                
+
+                $user = User::find($data['obfuscatedExternalAccountId']);
+
+                if ($user) {
+
+                    $limit = $user->linkLimitByPlan($productId);
+
+                    // Current active count
+                    $activeCount = SiteLink::where('user_id', $user->id)
+                        ->where('is_disabled', false)
+                        ->count();
+
+                        if ($activeCount > $limit) break;
+
+                    // Enable disabled links (oldest first)
+                    $links = SiteLink::where('user_id', $user->id)
+                        ->where('is_disabled', true)
+                        ->orderBy('created_at')
+                        ->get();
+
+                    foreach ($links as $link) {
+                        if ($activeCount > $limit) break;
+                            $exists = SiteLink::where('user_id', $user->id)
+                                ->where('url', $link->url)
+                                ->where('is_disabled', false)
+                                ->exists();
+
+                        if (!$exists) {
+                            $link->update(['is_disabled' => false]);
+                            $activeCount++;
+                        }
+                    }
+                }
                 
                 break;
             case 2: // SUBSCRIPTION_RENEWED
