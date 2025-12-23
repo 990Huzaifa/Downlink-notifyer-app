@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\CreditsWallet;
+use App\Models\SiteLink;
 use Illuminate\Console\Command;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,11 @@ class TrackSubscription extends Command
                 // notify user by email
                 // $user = $subscription->user;
                 // Mail::to($user->email)->send(new SubscriptionExpired($user));
+
+
+                // disabled all links of the user
+                SiteLink::where('user_id', $subscription->user_id)
+                    ->update(['is_disabled' => true]);
             }
         }
     }
