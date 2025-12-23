@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('is_active',['active','inactive'])->default('active');
             // notifyers
             $table->boolean('is_notify')->default(true);
+            $table->boolean('is_disabled')->default(false);
             $table->boolean('notify_email')->default(false);
             $table->boolean('notify_sms')->default(false);
             $table->boolean('notify_push')->default(true);

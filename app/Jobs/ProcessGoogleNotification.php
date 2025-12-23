@@ -117,29 +117,29 @@ class ProcessGoogleNotification implements ShouldQueue
 
                     $limit = $user->linkLimitByPlan($productId);
 
-                    // Enable links one by one
+                    // Current active count
+                    $activeCount = SiteLink::where('user_id', $user->id)
+                        ->where('is_disabled', false)
+                        ->count();
+
+                        if ($activeCount >= $limit) break;
+
+                    // Enable disabled links (oldest first)
                     $links = SiteLink::where('user_id', $user->id)
+                        ->where('is_disabled', true)
                         ->orderBy('created_at')
                         ->get();
 
                     foreach ($links as $link) {
-
-                        if (
-                            SiteLink::where('user_id', $user->id)
-                                ->where('is_active','active')
-                                ->count() >= $limit
-                        ) {
-                            break;
-                        }
-
-                        // Prevent duplicate active URL
-                        $exists = SiteLink::where('user_id',$user->id)
-                            ->where('url',$link->url)
-                            ->where('is_active','active')
-                            ->exists();
+                        if ($activeCount >= $limit) break;
+                                $exists = SiteLink::where('user_id', $user->id)
+                                ->where('url', $link->url)
+                                ->where('is_disabled', false)
+                                ->exists();
 
                         if (!$exists) {
-                            $link->update(['is_active'=>'active']);
+                            $link->update(['is_disabled' => false]);
+                            $activeCount++;
                         }
                     }
                 }
@@ -160,10 +160,9 @@ class ProcessGoogleNotification implements ShouldQueue
                     ]);
 
 
-                    // 🔥 Disable ALL links
+                     // 🔥 Disable ALL links
                     SiteLink::where('user_id', $subscription->user_id)
-                        ->where('is_active', 'active')
-                        ->update(['is_active' => 'inactive']);
+                        ->update(['is_disabled' => true]);
                 }
                 break;
             // ... include other types like RECOVERED, ON_HOLD, etc.

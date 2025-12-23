@@ -89,11 +89,26 @@ class User extends Authenticatable
     {
         if ($this->isPremium()) {
             return match ($this->subscription->plan) {
-                'basic' => 5,
-                'pro'   => 25,
+                'premium-monthly' => 5,
+                'premium_monthly' => 5,
+                'ultra-premium-monthly'   => 25,
+                'ultra_premium_monthly'   => 25,
                 default => 1,
             };
         }
         return 1;
     }
+
+
+    public function linkLimitByPlan($plan)
+    {
+        return match ($plan) {
+            'premium-monthly' => 5,
+            'premium_monthly' => 5,
+            'ultra-premium-monthly'   => 25,
+            'ultra_premium_monthly'   => 25,
+            default => 1,
+        };
+    }
+    
 }
