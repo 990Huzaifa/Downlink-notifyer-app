@@ -122,7 +122,7 @@ class ProcessGoogleNotification implements ShouldQueue
                         ->where('is_disabled', false)
                         ->count();
 
-                        if ($activeCount >= $limit) break;
+                        if ($activeCount > $limit) break;
 
                     // Enable disabled links (oldest first)
                     $links = SiteLink::where('user_id', $user->id)
@@ -131,8 +131,8 @@ class ProcessGoogleNotification implements ShouldQueue
                         ->get();
 
                     foreach ($links as $link) {
-                        if ($activeCount >= $limit) break;
-                                $exists = SiteLink::where('user_id', $user->id)
+                        if ($activeCount > $limit) break;
+                            $exists = SiteLink::where('user_id', $user->id)
                                 ->where('url', $link->url)
                                 ->where('is_disabled', false)
                                 ->exists();
