@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\SiteLink;
 use App\Models\Subscription;
+use App\Models\User;
 use App\Services\GoogleAuthService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -109,6 +111,38 @@ class ProcessGoogleNotification implements ShouldQueue
                         'status'            => 'active',
                     ]);
                 }
+                $user = User::find($subscription->user_id);
+
+                if ($user) {
+
+                    $limit = $user->linkLimitByPlan($productId);
+
+                    // Enable links one by one
+                    $links = SiteLink::where('user_id', $user->id)
+                        ->orderBy('created_at')
+                        ->get();
+
+                    foreach ($links as $link) {
+
+                        if (
+                            SiteLink::where('user_id', $user->id)
+                                ->where('is_active','active')
+                                ->count() >= $limit
+                        ) {
+                            break;
+                        }
+
+                        // Prevent duplicate active URL
+                        $exists = SiteLink::where('user_id',$user->id)
+                            ->where('url',$link->url)
+                            ->where('is_active','active')
+                            ->exists();
+
+                        if (!$exists) {
+                            $link->update(['is_active'=>'active']);
+                        }
+                    }
+                }
                 break;
             case 3: // SUBSCRIPTION_CANCELED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('platform', 'google')->first();
@@ -124,6 +158,12 @@ class ProcessGoogleNotification implements ShouldQueue
                     $subscription->update([
                         'status' => 'expired',
                     ]);
+
+
+                    // 🔥 Disable ALL links
+                    SiteLink::where('user_id', $subscription->user_id)
+                        ->where('is_active', 'active')
+                        ->update(['is_active' => 'inactive']);
                 }
                 break;
             // ... include other types like RECOVERED, ON_HOLD, etc.

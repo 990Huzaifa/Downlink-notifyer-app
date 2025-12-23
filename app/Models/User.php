@@ -61,4 +61,39 @@ class User extends Authenticatable
     {
         return $this->hasOne(Subscription::class, 'user_id', 'id');
     }
+
+    public function isPremium()
+    {
+        $subscription = $this->subscription;
+        if ($subscription && $subscription->status === 'active') {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    // handle limit of links functions
+
+    public function siteLinks()
+    {
+        return $this->hasMany(SiteLink::class);
+    }
+
+    public function activeLinks()
+    {
+        return $this->siteLinks()->where('is_active', 'active');
+    }
+
+    public function linkLimit()
+    {
+        if ($this->isPremium()) {
+            return match ($this->subscription->plan) {
+                'basic' => 5,
+                'pro'   => 25,
+                default => 1,
+            };
+        }
+        return 1;
+    }
 }

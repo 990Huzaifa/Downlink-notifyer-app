@@ -59,5 +59,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::post('google/verify-payment', [PaymentController::class, 'verifyGoogle']);
+
         
 });
