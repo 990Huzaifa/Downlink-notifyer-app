@@ -34,6 +34,7 @@ class Notify extends Command
         $Sites = SiteLink::select('site_links.*','site_checks.checked_at')
             ->join('site_checks', 'site_checks.site_link_id', '=', 'site_links.id')
             ->where('site_links.is_active', 'active')
+            ->where('site_links.is_disabled', false)
             ->where('site_links.is_notify', true)
             ->get();
         foreach ($Sites as $Site) {

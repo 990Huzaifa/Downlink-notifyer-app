@@ -92,7 +92,7 @@ class SiteLinkController extends Controller
                     'message' => 'Link limit reached. Upgrade plan.'
                 ], 403);
             }
-
+            // 2️⃣ Validation
 
             $validator = Validator::make(
                 $request->all(),
@@ -118,6 +118,15 @@ class SiteLinkController extends Controller
                     'notify_push.boolean' => 'Notify push must be true or false.',
                 ]
             );
+            // extra validation here..
+            $siteCheck = SiteLink::where('user_id', $user->id)
+                ->where('url', $request->url)
+                ->where('is_disabled', false)
+                ->first();
+
+            if ($siteCheck) {
+                throw new Exception('You are already monitoring this URL.', 400);
+            }
 
             if ($validator->fails()) {
                 throw new Exception($validator->errors()->first(), 400);
