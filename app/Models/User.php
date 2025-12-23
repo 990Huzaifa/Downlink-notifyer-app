@@ -82,7 +82,7 @@ class User extends Authenticatable
 
     public function activeLinks()
     {
-        return $this->siteLinks()->where('is_active', 'active');
+        return $this->siteLinks()->where('is_disabled', false);
     }
 
     public function linkLimit()
