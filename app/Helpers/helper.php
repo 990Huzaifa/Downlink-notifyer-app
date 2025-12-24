@@ -112,7 +112,7 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 60)
     ];
 }
 
-function estimateAssetsWeight(string $baseUrl, string $html, int $limit = 15, int $timeout = 10): array
+function estimateAssetsWeight(string $baseUrl, string $html, int $limit = 15, int $timeout = 60): array
 {
     // 1. Basic check for HTML
     if (empty($html)) {
