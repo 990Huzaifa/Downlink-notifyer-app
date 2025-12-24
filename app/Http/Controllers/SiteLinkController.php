@@ -88,7 +88,7 @@ class SiteLinkController extends Controller
             $user = Auth::user();
 
             // 1️⃣ Limit check
-            if ($user->activeLinks()->count() > $user->linkLimit()) {
+            if ($user->activeLinks()->count() >= $user->linkLimit()) {
                 return response()->json([
                     'message' => 'Link limit reached. Upgrade plan.'
                 ], 403);
