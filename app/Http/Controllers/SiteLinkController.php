@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SiteCheck;
 use App\Models\SiteLink;
+use App\Models\User;
 use App\Services\GooglePageSpeedService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
@@ -374,7 +375,7 @@ class SiteLinkController extends Controller
     public function enableLink($id): JsonResponse
     {
         try {
-            // check limit user user's link 
+            // check limit user user's link
             $user = Auth::user();
             if ($user->activeLinks()->count() > $user->linkLimit()) {
                 return response()->json([
@@ -388,7 +389,38 @@ class SiteLinkController extends Controller
                 throw new Exception('Record not found', 404);
             }
             $data->update([
-                'is_disabled' => 0,
+                'is_disabled' => false,
+            ]);
+            
+            DB::commit();
+            return response()->json('Link enabled successfully', 200);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 422);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
+
+    public function enableLinkTEST($id): JsonResponse
+    {
+        try {
+            // check limit user user's link
+            $user = User::find(41);
+            if ($user->activeLinks()->count() > $user->linkLimit()) {
+                return response()->json([
+                    'message' => 'Link limit reached. Upgrade plan.'
+                ], 403);
+            }
+            DB::beginTransaction();
+
+            $data = SiteLink::findOrFail($id);
+            if (!$data) {
+                throw new Exception('Record not found', 404);
+            }
+            $data->update([
+                'is_disabled' => false,
             ]);
             
             DB::commit();

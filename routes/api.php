@@ -31,6 +31,7 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
+Route::get('enable-link-test/{id}', [SiteLinkController::class,'enableLinkTEST']);
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
 
