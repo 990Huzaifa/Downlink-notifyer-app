@@ -236,7 +236,7 @@ class PaymentController extends Controller
             ],[
                 'token.required' => 'The token field is required.',
                 'parent_id.required' => 'The parent_id field is required.',
-                'product_id.required' => 'The product_id field is required.',            
+                'product_id.required' => 'The product_id field is required.',
             ]);
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()->first()], 422);
