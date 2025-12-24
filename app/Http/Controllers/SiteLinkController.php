@@ -141,7 +141,7 @@ class SiteLinkController extends Controller
             // if(!$check)throw new Exception('Site is Invalid', 400);
 
 
-            $metrics = probe($request->url, (int)$request->duration, 15);
+            $metrics = probe($request->url, (int)$request->duration, 30);
             $service = new GooglePageSpeedService();
             $pageSpeedData = $service->getCombinedData($request->url);
             // Log::info('PageSpeed Data: ', ['data' => $pageSpeedData]);

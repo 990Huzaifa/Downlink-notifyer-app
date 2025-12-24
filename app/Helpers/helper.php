@@ -5,7 +5,7 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Support\Str;
 
-function probe(string $url, int $durationSeconds = 60, int $timeout = 15)
+function probe(string $url, int $durationSeconds = 60, int $timeout = 60)
 {
     $timings = [
         'ttfb_ms'   => null,
