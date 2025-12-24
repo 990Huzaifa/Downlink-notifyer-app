@@ -408,7 +408,7 @@ class SiteLinkController extends Controller
         try {
             // check limit user user's link
             $user = User::find(41);
-            if ($user->activeLinks()->count() > $user->linkLimit()) {
+            if ($user->activeLinks()->count() >= $user->linkLimit()) {
                 return response()->json([
                     'message' => 'Link limit reached. Upgrade plan.'
                 ], 403);
