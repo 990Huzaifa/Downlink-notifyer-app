@@ -388,7 +388,7 @@ class SiteLinkController extends Controller
                 throw new Exception('Record not found', 404);
             }
             $data->update([
-                'is_disabled' => false,
+                'is_disabled' => 0,
             ]);
             
             DB::commit();
