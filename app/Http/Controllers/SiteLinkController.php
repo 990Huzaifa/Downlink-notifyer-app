@@ -87,7 +87,7 @@ class SiteLinkController extends Controller
             $user = Auth::user();
 
             // 1️⃣ Limit check
-            if ($user->activeLinks()->count() >= $user->linkLimit()) {
+            if ($user->activeLinks()->count() > $user->linkLimit()) {
                 return response()->json([
                     'message' => 'Link limit reached. Upgrade plan.'
                 ], 403);
@@ -121,10 +121,12 @@ class SiteLinkController extends Controller
             // extra validation here..
             $siteCheck = SiteLink::where('user_id', $user->id)
                 ->where('url', $request->url)
-                ->where('is_disabled', false)
                 ->first();
 
             if ($siteCheck) {
+                if($siteCheck->is_disabled){
+                    throw new Exception('You have previously disabled monitoring for this URL. Please enable it instead of adding again.', 400);
+                }
                 throw new Exception('You are already monitoring this URL.', 400);
             }
 
@@ -359,6 +361,38 @@ class SiteLinkController extends Controller
             DB::commit();
             $message = $data->is_notify ? 'Notifications enabled' : 'Notifications disabled';
             return response()->json($message, 200);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return response()->json(['DB error' => $e->getMessage()], 422);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
+
+
+    public function enableLink($id): JsonResponse
+    {
+        try {
+            // check limit user user's link 
+            $user = Auth::user();
+            if ($user->activeLinks()->count() > $user->linkLimit()) {
+                return response()->json([
+                    'message' => 'Link limit reached. Upgrade plan.'
+                ], 403);
+            }
+            DB::beginTransaction();
+
+            $data = SiteLink::findOrFail($id);
+            if (!$data) {
+                throw new Exception('Record not found', 404);
+            }
+            $data->update([
+                'is_disabled' => false,
+            ]);
+            
+            DB::commit();
+            return response()->json('Link enabled successfully', 200);
         } catch (QueryException $e) {
             DB::rollBack();
             return response()->json(['DB error' => $e->getMessage()], 422);
