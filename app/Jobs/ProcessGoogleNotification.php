@@ -162,7 +162,12 @@ class ProcessGoogleNotification implements ShouldQueue
 
                      // 🔥 Disable ALL links
                     SiteLink::where('user_id', $subscription->user_id)
-                        ->update(['is_disabled' => true]);
+                        ->update([
+                            'is_disabled' => true,
+                            'duration' => 86400,
+                            'notify_email' => 0,
+                            'notify_sms' => 0,
+                        ]);
                 }
                 break;
             // ... include other types like RECOVERED, ON_HOLD, etc.
