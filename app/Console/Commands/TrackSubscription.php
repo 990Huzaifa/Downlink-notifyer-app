@@ -47,7 +47,7 @@ class TrackSubscription extends Command
                 SiteLink::where('user_id', $subscription->user_id)
                     ->update([
                         'is_disabled' => true,
-                        'duration' => 86400,
+                        'duration' => "86400",
                         'notify_email' => 0,
                         'notify_sms' => 0,
                     ]);
