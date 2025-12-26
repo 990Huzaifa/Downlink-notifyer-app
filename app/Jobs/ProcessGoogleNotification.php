@@ -109,6 +109,7 @@ class ProcessGoogleNotification implements ShouldQueue
                         'plan'              => $productId,
                         'expires_at'        => $data['expiry'],
                         'status'            => 'active',
+                        'canceled_at'      => null,
                     ]);
                 }
                 // $user = User::find($subscription->user_id);
