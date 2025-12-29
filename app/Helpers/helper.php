@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
@@ -82,7 +83,7 @@ function probe(string $url, int $durationSeconds = 60, int $timeout = 60)
         $sslDaysLeft = getSslDaysLeft(parse_url($finalUrl, PHP_URL_HOST));
     }
 
-    $now = now();
+    $now = Carbon::now('UTC');
     $nextCheckAt = $now->copy()->addSeconds($durationSeconds);
 
     return [
