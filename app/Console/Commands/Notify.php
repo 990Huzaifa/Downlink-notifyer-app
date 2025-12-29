@@ -6,6 +6,7 @@ use App\Models\SiteCheck;
 use App\Models\SiteLink;
 use App\Models\User;
 use App\Services\FirebaseService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class Notify extends Command
@@ -53,7 +54,7 @@ class Notify extends Command
                         'ssl_days_left'    => $metrics['ssl_days_left'],
                         'html_bytes'       => $metrics['html_bytes'],
                         'assets_bytes'       => $metrics['assets_bytes'],
-                        'checked_at' => $metrics['last_checked_at'],
+                        'checked_at' => Carbon::now('UTC')->toISOString(),
                     ]);
 
                 $this->comment("Notification sent for site: {$Site->url}");
