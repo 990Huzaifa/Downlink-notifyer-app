@@ -140,7 +140,7 @@ class SiteLinkController extends Controller
             // here we hit the url to test that site is working or not by their status code
             // if status code is 200 then site is working otherwise down
             $check =$this->isValidAndAccessible($request->url);
-            if(!$check)throw new Exception('Site is Invalid', 400);
+            // if(!$check)throw new Exception('Site is Invalid', 400);
 
 
             // $metrics = probe($request->url, (int)$request->duration, 30);
@@ -160,7 +160,7 @@ class SiteLinkController extends Controller
 
             SiteCheck::create([
                 'site_link_id' => $data->id,
-                'status' => "up",
+                'status' => $check ? 'up' : 'down',
                 'response_time_ms' => null,
                 'ssl_days_left'    => null,
                 'html_bytes'       => null,
@@ -314,35 +314,16 @@ class SiteLinkController extends Controller
 
     private function isValidAndAccessible(string $url, int $timeout = 15)
     {
-        // A quick check to ensure the string looks like a valid URL first
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return false;
-        }
 
         try {
-            // 1. Attempt a lightweight HEAD request first.
-            // This is generally faster and uses less bandwidth since it doesn't download the body.
-            $response = Http::timeout($timeout)->head($url);
-
-            // If the HEAD request was NOT successful, we try a GET as a fallback.
-            // Some servers block HEAD requests or are configured poorly.
-            if (!$response->successful()) {
-                $response = Http::timeout($timeout)->get($url);
-            }
-
-            // 2. Check for a successful status code (200-299).
-            // The ->successful() method handles this range for us.
-            if($response->successful()) {
-                return true;
-            }
-
+            $response = Http::timeout($timeout)->get($url);
+            $statusCode = $response->status();
+            return ($statusCode >= 200 && $statusCode < 400);
         } catch (ConnectionException $e) {
-            // Catches errors like DNS resolution failure, connection refusal, or request timeout.
-            // This means the URL is unreachable at the network level.
+            Log::error("ConnectionException: " . $e->getMessage());
             return false;
         } catch (Exception $e) {
-            // Catches any other unexpected errors during the process.
-            // You could log the error here if needed: \Log::warning("URL validation error: " . $e->getMessage());
+            Log::error("Exception: " . $e->getMessage());
             return false;
         }
     }
