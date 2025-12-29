@@ -165,7 +165,7 @@ class SiteLinkController extends Controller
                 'ssl_days_left'    => null,
                 'html_bytes'       => null,
                 'assets_bytes'       => null,
-                // 'checked_at' => Carbon::now('UTC')->toISOString(),
+                'checked_at' => now(),
                 'scores' => null,
             ]);
 
