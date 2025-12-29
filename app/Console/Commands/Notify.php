@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Notification;
 use App\Models\SiteCheck;
 use App\Models\SiteLink;
 use App\Models\User;
@@ -59,10 +60,20 @@ class Notify extends Command
 
                 $this->comment("Notification sent for site: {$Site->url}");
                 $service = new FirebaseService();
-                    $user = User::find($Site->user_id);
+                $user = User::find($Site->user_id);
+                $data = [
+                    'site_link_id' => $Site->id,
+                    'status' => $metrics['status'],
+                ];
                 // send notification logic here
                 if($metrics['status'] == 'down') {
                     if($user->fcm_id != null) {
+                        $notification = Notification::create([
+                            'user_id' => $user->id,
+                            'title' => "Site Down Alert",
+                            'message' => "The site {$Site->url} is down.",
+                            'data' => $data
+                        ]);
                         $service->sendToDevice($user->fcm_id, "Site Down Alert", "The site {$Site->url} is down.");
                     }
                     if($Site->notify_email) {
@@ -77,6 +88,14 @@ class Notify extends Command
                 }else{
 
                     if($user->fcm_id != null) {
+
+                        $notification = Notification::create([
+                            'user_id' => $user->id,
+                            'title' => "Site Up Alert",
+                            'message' => "The site {$Site->url} is up.",
+                            'data' => $data
+                        ]);
+
                         $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.");
                     }
 
