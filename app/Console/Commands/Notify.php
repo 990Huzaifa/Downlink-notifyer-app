@@ -55,7 +55,7 @@ class Notify extends Command
                         'ssl_days_left'    => $metrics['ssl_days_left'],
                         'html_bytes'       => $metrics['html_bytes'],
                         'assets_bytes'       => $metrics['assets_bytes'],
-                        // 'checked_at' => Carbon::now('UTC')->toISOString(),
+                        'checked_at' => now(),
                     ]);
 
                 $this->comment("Notification sent for site: {$Site->url}");
