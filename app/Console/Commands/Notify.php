@@ -74,7 +74,7 @@ class Notify extends Command
                             'message' => "The site {$Site->url} is down.",
                             'data' => json_encode($data)
                         ]);
-                        $service->sendToDevice($user->fcm_id, "Site Down Alert", "The site {$Site->url} is down.");
+                        $service->sendToDevice($user->fcm_id, "Site Down Alert", "The site {$Site->url} is down.", json_encode($data));
                     }
                     if($Site->notify_email) {
                         myMailSend(
@@ -96,7 +96,7 @@ class Notify extends Command
                             'data' => json_encode($data)
                         ]);
 
-                        $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.");
+                        $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.", json_encode($data));
                     }
 
                     if($Site->notify_email) {
