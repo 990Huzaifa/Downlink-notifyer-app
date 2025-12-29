@@ -139,8 +139,8 @@ class SiteLinkController extends Controller
             DB::beginTransaction();
             // here we hit the url to test that site is working or not by their status code
             // if status code is 200 then site is working otherwise down
-            // $check =$this->isValidAndAccessible($request->url);
-            // if(!$check)throw new Exception('Site is Invalid', 400);
+            $check =$this->isValidAndAccessible($request->url);
+            if(!$check)throw new Exception('Site is Invalid', 400);
 
 
             // $metrics = probe($request->url, (int)$request->duration, 30);
