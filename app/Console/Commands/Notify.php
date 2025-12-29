@@ -72,7 +72,7 @@ class Notify extends Command
                             'user_id' => $user->id,
                             'title' => "Site Down Alert",
                             'message' => "The site {$Site->url} is down.",
-                            'data' => $data
+                            'data' => json_encode($data)
                         ]);
                         $service->sendToDevice($user->fcm_id, "Site Down Alert", "The site {$Site->url} is down.");
                     }
@@ -93,7 +93,7 @@ class Notify extends Command
                             'user_id' => $user->id,
                             'title' => "Site Up Alert",
                             'message' => "The site {$Site->url} is up.",
-                            'data' => $data
+                            'data' => json_encode($data)
                         ]);
 
                         $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.");
