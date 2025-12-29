@@ -21,4 +21,8 @@ class SiteCheck extends Model {
         'checked_at',
     ];
 
+    protected $casts = [
+        'checked_at' => 'datetime',
+    ];
+
 }
