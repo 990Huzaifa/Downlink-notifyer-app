@@ -263,7 +263,7 @@ function myMailSend($to, $name, $subject, $message, $link = null, $data = null){
         "message" => $message,
         "link"    => $link,
         "data"    => $data,
-        "logo"    => 'https://api.upliffting.com/assets/images/logo.png',
+        "logo"    => 'https://downnotify.techvince.com/assets/images/logo.png',
         "from"    => 'DownLink',
     ];
 
