@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessSiteMetricsJob;
 use App\Models\SiteCheck;
 use App\Models\SiteLink;
 use App\Models\User;
@@ -142,11 +143,11 @@ class SiteLinkController extends Controller
             // if(!$check)throw new Exception('Site is Invalid', 400);
 
 
-            $metrics = probe($request->url, (int)$request->duration, 30);
-            $service = new GooglePageSpeedService();
-            $pageSpeedData = $service->getCombinedData($request->url);
+            // $metrics = probe($request->url, (int)$request->duration, 30);
+            // $service = new GooglePageSpeedService();
+            // $pageSpeedData = $service->getCombinedData($request->url);
             // Log::info('PageSpeed Data: ', ['data' => $pageSpeedData]);
-            if(!$metrics)throw new Exception('Site is Invalid', 400);
+            // if(!$metrics)throw new Exception('Site is Invalid', 400);
             $data = SiteLink::create([
                 'user_id' => $user->id,
                 'title' => $request->title,
@@ -159,17 +160,17 @@ class SiteLinkController extends Controller
 
             SiteCheck::create([
                 'site_link_id' => $data->id,
-                'status' => $metrics['status'],
-                'response_time_ms' => $metrics['response_time_ms'],
-                'ssl_days_left'    => $metrics['ssl_days_left'],
-                'html_bytes'       => $metrics['html_bytes'],
-                'assets_bytes'       => $metrics['assets_bytes'],
-                'checked_at' => $metrics['last_checked_at'],
-                'scores' => json_encode($pageSpeedData['scores']) ?? null,
+                'status' => "up",
+                'response_time_ms' => null,
+                'ssl_days_left'    => null,
+                'html_bytes'       => null,
+                'assets_bytes'       => null,
+                'checked_at' => null,
+                'scores' => null,
             ]);
 
             DB::commit();
-
+            dispatch(new ProcessSiteMetricsJob($data->id));
             return response()->json($data, 200);
         } catch (QueryException $e) {
             DB::rollBack();
