@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteLinkController;
 use App\Http\Controllers\PaymentController;
@@ -60,6 +61,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
     });
+
+        
+    Route::apiResource('notification', NotificationController::class)->only(['index']);
+    Route::get('notification/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
+    Route::delete('notification/{id}', [NotificationController::class, 'destroy']);
 
     Route::post('google/verify-payment', [PaymentController::class, 'verifyGoogle']);
 
