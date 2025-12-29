@@ -62,9 +62,9 @@ class Notify extends Command
                     $user = User::find($Site->user_id);
                 // send notification logic here
                 if($metrics['status'] == 'down') {
-
-                    $service->sendToDevice($user->fcm_id, "Site Down Alert", "The site {$Site->url} is down.");
-
+                    if($user->fcm_id != null) {
+                        $service->sendToDevice($user->fcm_id, "Site Down Alert", "The site {$Site->url} is down.");
+                    }
                     if($Site->notify_email) {
                         myMailSend(
                             $user->email,
@@ -76,7 +76,9 @@ class Notify extends Command
                     
                 }else{
 
-                    $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.");
+                    if($user->fcm_id != null) {
+                        $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.");
+                    }
 
                     if($Site->notify_email) {
                         myMailSend(
