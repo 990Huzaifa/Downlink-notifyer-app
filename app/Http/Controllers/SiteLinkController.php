@@ -29,6 +29,7 @@ class SiteLinkController extends Controller
             $title = $request->input('title', '');
             $status = $request->input('status', '');
             $duration = $request->input('duration', ''); //no of days
+            $tzcode   = $request->input('tzcode', 'UTC');
             
             $query = SiteLink::select('site_links.*', 'site_checks.*','site_links.id as id')
             ->where('site_links.user_id', $user->id)
@@ -54,6 +55,16 @@ class SiteLinkController extends Controller
             }
 
             $result = $query->paginate(10);
+
+            // 🔥 Convert checked_at to requested timezone
+            $result->getCollection()->transform(function ($item) use ($tzcode) {
+                if ($item->checked_at) {
+                    $item->checked_at = Carbon::parse($item->checked_at, 'UTC')
+                        ->setTimezone($tzcode)
+                        ->toISOString();
+                }
+                return $item;
+            });
 
             return response()->json($result, 200);
 
