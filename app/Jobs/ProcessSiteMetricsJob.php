@@ -70,7 +70,7 @@ class ProcessSiteMetricsJob implements ShouldQueue
                     'ssl_days_left'     => $metrics['ssl_days_left'],
                     'html_bytes'        => $metrics['html_bytes'],
                     'assets_bytes'      => $metrics['assets_bytes'],
-                    'checked_at'        => $metrics['last_checked_at'],
+                    // 'checked_at'        => $metrics['last_checked_at'],
                     'scores'            => isset($pageSpeedData['scores'])
                         ? json_encode($pageSpeedData['scores'])
                         : null,
