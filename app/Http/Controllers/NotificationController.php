@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationList;
+use App\Events\ProfileInfo;
 use App\Events\SiteLinkList;
+use App\Events\SubscriptionPlan;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
@@ -94,6 +97,9 @@ class NotificationController extends Controller
 
 
         broadcast((new SiteLinkList($user->id)));
+        broadcast((new SubscriptionPlan($user->id)));
+        broadcast((new NotificationList($user->id)));
+        broadcast((new ProfileInfo($user->id)));
         return response()->json([
             'auth' => $auth
         ]);
