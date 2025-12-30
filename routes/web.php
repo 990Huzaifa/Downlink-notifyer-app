@@ -16,3 +16,8 @@ Route::get('/optimize-clear', function () {
     Artisan::call('optimize:clear');
     return 'Optimization cache cleared!';
 });
+
+Route::post('/test-broadcasting', function(\Illuminate\Http\Request $request) {
+    \Log::info('Test route hit', $request->all());
+    return response()->json(['status' => 'working']);
+});
