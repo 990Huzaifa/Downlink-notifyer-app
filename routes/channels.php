@@ -15,11 +15,5 @@ use App\Models\User;
 */
 
 Broadcast::channel('user.{userId}', function ($user, $userId) {
-    \Log::info('Inside channel callback', [
-        'user_id' => $user ? $user->id : 'NULL',
-        'requested_userId' => $userId,
-        'match' => $user && (int) $user->id === (int) $userId
-    ]);
-    
     return (int) $user->id === (int) $userId;
-}, ['guards' => ['sanctum']]);
+});
