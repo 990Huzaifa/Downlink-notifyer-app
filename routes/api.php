@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Broadcast;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Broadcast::routes(['middleware' => ['auth:sanctum']]);
+Broadcast::routes(['middleware' => ['auth:api']]);
 
 Route::post('signup', [AuthController::class, 'signup']);
 Route::post('signin', [AuthController::class, 'signin']);
