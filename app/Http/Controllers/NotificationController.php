@@ -91,20 +91,9 @@ class NotificationController extends Controller
         $stringToSign = $socketId . ':' . $channelName;
         $signature = hash_hmac('sha256', $stringToSign, $pusherSecret);
         $auth = $pusherKey . ':' . $signature;
-        
-        // Agar authentication successful hai
 
-            // Check if it's a private user channel
-            if (preg_match('/private-user\.(\d+)/', $channelName, $matches)) {
-                $requestedUserId = $matches[1];
-                
-                // Verify user is subscribing to their own channel
-                if ($user->id == $requestedUserId) {
-                    broadcast((new SiteLinkList($user)));
-                }
-            }
 
-        
+        broadcast((new SiteLinkList($user->id)));
         return response()->json([
             'auth' => $auth
         ]);
