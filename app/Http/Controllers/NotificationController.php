@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SiteLinkList;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Broadcast;
 
 
 class NotificationController extends Controller
@@ -64,5 +66,39 @@ class NotificationController extends Controller
         }catch(Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+
+
+    public function broadcast(Request $request)
+    {
+        // Set sanctum guard
+        config(['auth.defaults.guard' => 'sanctum']);
+        
+        $user = $request->user();
+        $channelName = $request->channel_name;
+        
+        \Log::info('Broadcasting authentication attempt', [
+            'user_id' => $user->id,
+            'channel' => $channelName
+        ]);
+        
+        // Authenticate the channel
+        $response = Broadcast::auth($request);
+        
+        // Agar authentication successful hai
+        if ($response->getStatusCode() === 200) {
+            // Check if it's a private user channel
+            if (preg_match('/private-user\.(\d+)/', $channelName, $matches)) {
+                $requestedUserId = $matches[1];
+                
+                // Verify user is subscribing to their own channel
+                if ($user->id == $requestedUserId) {
+                    broadcast((new SiteLinkList($user)));
+                }
+            }
+        }
+        
+        return $response;
     }
 }

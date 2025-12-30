@@ -34,35 +34,8 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Route::post('/broadcasting/auth', function (Illuminate\Http\Request $request) {
-    $user = $request->user();
-
-    // Parse channel name to get userId
-    // Format: "private-user.4" → extract "4"
-    preg_match('/private-user\.(\d+)/', $request->channel_name, $matches);
-    $requestedUserId = $matches[1] ?? null;
-
-    
-    // Check if user is authorized for this channel
-    if ($user->id != $requestedUserId) {
-        return response()->json(['message' => 'Forbidden'], 403);
-    }
-    
-    // Generate auth signature manually
-    $channelName = $request->channel_name;
-    $socketId = $request->socket_id;
-    
-    $pusherKey = config('broadcasting.connections.pusher.key');
-    $pusherSecret = config('broadcasting.connections.pusher.secret');
-    
-    $stringToSign = $socketId . ':' . $channelName;
-    $signature = hash_hmac('sha256', $stringToSign, $pusherSecret);
-    $auth = $pusherKey . ':' . $signature;
-    
-    return response()->json([
-        'auth' => $auth
-    ]);
-})->middleware('auth:sanctum');
+Route::post('/broadcasting/auth', [NotificationController::class, 'authenticate'])
+    ->middleware('auth:sanctum');
 
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
