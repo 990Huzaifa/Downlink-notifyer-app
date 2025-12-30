@@ -34,7 +34,9 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Broadcast::routes(['middleware' => ['auth:api']]);
+Route::post('/broadcasting/auth', function (Request $request) {
+    return Broadcast::auth($request);
+});
 
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
