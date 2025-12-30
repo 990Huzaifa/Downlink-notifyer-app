@@ -98,4 +98,17 @@ class NotificationController extends Controller
             'auth' => $auth
         ]);
     }
+
+
+
+    public function runEvent(): JsonResponse
+    {
+        // enable logged
+        $user = Auth::user();
+        
+        broadcast(new SiteLinkList($user->id));
+        
+
+        return response()->json(['message' => 'Event broadcasted'], 200);
+    }
 }

@@ -70,6 +70,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('notification', NotificationController::class)->only(['index']);
     Route::get('notification/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
     Route::delete('notification/{id}', [NotificationController::class, 'destroy']);
+    Route::get('run-event', [NotificationController::class, 'runEvent']);
 
     Route::post('google/verify-payment', [PaymentController::class, 'verifyGoogle']);
 
