@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Broadcast;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,5 +16,3 @@ Route::get('/optimize-clear', function () {
     Artisan::call('optimize:clear');
     return 'Optimization cache cleared!';
 });
-
-Broadcast::routes(['middleware' => ['auth:api']]);

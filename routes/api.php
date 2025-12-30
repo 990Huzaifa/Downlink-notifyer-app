@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Broadcast;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Broadcast::routes(['middleware' => ['auth:api']]);
+
 Route::post('signup', [AuthController::class, 'signup']);
 Route::post('signin', [AuthController::class, 'signin']);
 Route::post('social',[AuthController::class,'socialLoginSignup']);
@@ -34,7 +36,7 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Broadcast::routes(['middleware' => ['auth:api']]);
+
 
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
