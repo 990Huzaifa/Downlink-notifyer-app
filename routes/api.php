@@ -36,7 +36,16 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Broadcast::routes(['middleware' => ['auth:api']]);
+Route::post('/broadcasting/auth', function (Illuminate\Http\Request $request) {
+    \Log::info('Custom broadcasting auth hit', [
+        'user' => $request->user(),
+        'channel' => $request->channel_name,
+        'socket_id' => $request->socket_id
+    ]);
+    
+    // Manually authenticate the broadcasting request
+    return Broadcast::auth($request);
+})->middleware('auth:sanctum');
 
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
