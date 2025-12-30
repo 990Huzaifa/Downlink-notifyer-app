@@ -9,6 +9,8 @@ use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Broadcast;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,7 +34,8 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Route::get('enable-link-test/{id}', [SiteLinkController::class,'enableLinkTEST']);
+Broadcast::routes(['middleware' => ['auth:api']]);
+
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
 
