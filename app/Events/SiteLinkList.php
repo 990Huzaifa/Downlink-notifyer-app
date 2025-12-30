@@ -35,6 +35,11 @@ class SiteLinkList implements ShouldBroadcast
         return [new PrivateChannel('user.' . $this->userId)]; // Broadcasting to the user-specific channel
     }
 
+    public function broadcastAs() 
+    { 
+        return 'SiteLinkList';  // Socket event name
+    }
+
     public function broadcastWith()
     {
         return [
