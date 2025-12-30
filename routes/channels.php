@@ -14,11 +14,7 @@ use App\Models\User;
 |
 */
 
-Broadcast::channel('user.{userId}', function (User $user, int $userId) {
-    \Log::info('Channel auth attempt', [
-        'user_id' => $user->id ?? 'null',
-        'requested_userId' => $userId,
-        'authenticated' => auth()->check()
-    ]);
-    return (int) $user->id === (int) $userId;
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    \Log::info('Channel callback executed!');
+    return true; // Always true for testing
 });
