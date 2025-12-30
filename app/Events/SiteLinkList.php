@@ -32,7 +32,7 @@ class SiteLinkList implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return [new PrivateChannel('private-user.' . $this->userId)]; // Broadcasting to the user-specific channel
+        return [new PresenceChannel('private-user.' . $this->userId)]; // Broadcasting to the user-specific channel
     }
 
     public function broadcastWith()
