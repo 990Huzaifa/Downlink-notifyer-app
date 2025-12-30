@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\NotifyUser;
 use App\Models\Notification;
 use App\Models\SiteCheck;
 use App\Models\SiteLink;
@@ -84,6 +85,11 @@ class Notify extends Command
                             "The site {$Site->url} is down. Please check."
                         );
                     }
+
+                    broadcast(new NotifyUser("Site Down Alert", $user->id, [
+                        'site_link_id' => $Site->id,
+                        'status' => 'down',
+                    ]));
                     
                 }else{
 
@@ -110,7 +116,10 @@ class Notify extends Command
                             "The site {$Site->url} is up. Please check."
                         );
                     }
-
+                    broadcast(new NotifyUser("Site Up Alert", $user->id, [
+                        'site_link_id' => $Site->id,
+                        'status' => 'up',
+                    ]));
                     
                 }
             } else {
