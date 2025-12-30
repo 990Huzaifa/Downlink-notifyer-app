@@ -77,6 +77,7 @@ class NotificationController extends Controller
         
         $user = $request->user();
         $channelName = $request->channel_name;
+        $socketId = $request->socket_id;
         
         \Log::info('Broadcasting authentication attempt', [
             'user_id' => $user->id,
@@ -84,10 +85,15 @@ class NotificationController extends Controller
         ]);
         
         // Authenticate the channel
-        $response = Broadcast::auth($request);
+        $pusherKey = config('broadcasting.connections.pusher.key');
+        $pusherSecret = config('broadcasting.connections.pusher.secret');
+        
+        $stringToSign = $socketId . ':' . $channelName;
+        $signature = hash_hmac('sha256', $stringToSign, $pusherSecret);
+        $auth = $pusherKey . ':' . $signature;
         
         // Agar authentication successful hai
-        if ($response->getStatusCode() === 200) {
+
             // Check if it's a private user channel
             if (preg_match('/private-user\.(\d+)/', $channelName, $matches)) {
                 $requestedUserId = $matches[1];
@@ -97,8 +103,10 @@ class NotificationController extends Controller
                     broadcast((new SiteLinkList($user)));
                 }
             }
-        }
+
         
-        return $response;
+        return response()->json([
+            'auth' => $auth
+        ]);
     }
 }
