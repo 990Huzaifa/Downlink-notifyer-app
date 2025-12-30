@@ -14,6 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'broadcasting/auth',
         '/broadcasting/auth',
-        'api/*',  // Agar yeh already hai to theek hai
+        'test-broadcasting',
+        '/test-broadcasting',
     ];
 }
