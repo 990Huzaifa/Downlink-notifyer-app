@@ -36,46 +36,7 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Route::post('/broadcasting/auth', function (Illuminate\Http\Request $request) {
-    $user = $request->user();
-    
-    \Log::info('Custom broadcasting auth', [
-        'user_id' => $user->id,
-        'channel' => $request->channel_name,
-        'socket_id' => $request->socket_id
-    ]);
-    
-    // Parse channel name to get userId
-    // Format: "private-user.4" → extract "4"
-    preg_match('/private-user\.(\d+)/', $request->channel_name, $matches);
-    $requestedUserId = $matches[1] ?? null;
-    
-    \Log::info('Authorization check', [
-        'authenticated_user' => $user->id,
-        'requested_user' => $requestedUserId,
-        'authorized' => $user->id == $requestedUserId
-    ]);
-    
-    // Check if user is authorized for this channel
-    if ($user->id != $requestedUserId) {
-        return response()->json(['message' => 'Forbidden'], 403);
-    }
-    
-    // Generate auth signature manually
-    $channelName = $request->channel_name;
-    $socketId = $request->socket_id;
-    
-    $pusherKey = config('broadcasting.connections.pusher.key');
-    $pusherSecret = config('broadcasting.connections.pusher.secret');
-    
-    $stringToSign = $socketId . ':' . $channelName;
-    $signature = hash_hmac('sha256', $stringToSign, $pusherSecret);
-    $auth = $pusherKey . ':' . $signature;
-    
-    return response()->json([
-        'auth' => $auth
-    ]);
-})->middleware('auth:sanctum');
+Broadcast::routes(['middleware' => ['auth:api']]);
 
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
