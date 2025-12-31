@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\SiteLink;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -22,7 +23,12 @@ class NotifyUser  implements ShouldBroadcast
     {
         $this->title = $title;
         $this->userId = (int)$userId;
-        $this->data = $data;
+        $site =SiteLink::select('site_links.*','site_checks.*')
+            ->join('site_checks', 'site_checks.site_link_id', '=', 'site_links.id')
+            ->where('site_links.id', $data['site_link_id'] ?? 0)
+            ->where('site_links.user_id', $userId)
+            ->first();
+        $this->data = array_merge($data, ['site' => $site]);
     }
 
     /**
