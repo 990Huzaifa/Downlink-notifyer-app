@@ -96,9 +96,9 @@ class NotificationController extends Controller
         $auth = $pusherKey . ':' . $signature;
 
 
-        broadcast((new SiteLinkList($user->id)));
+        // broadcast((new SiteLinkList($user->id)));
         broadcast((new SubscriptionPlan($user->id)));
-        broadcast((new NotificationList($user->id)));
+        // broadcast((new NotificationList($user->id)));
         broadcast((new ProfileInfo($user->id)));
         return response()->json([
             'auth' => $auth
