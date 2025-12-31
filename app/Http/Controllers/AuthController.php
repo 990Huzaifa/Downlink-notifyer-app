@@ -374,10 +374,7 @@ class AuthController extends Controller
                     'token' => $token,
                     'created_at' => now()
                 ]);
-                Mail::to($request->email)->send(new OTPMail([
-                    'message' => 'Hi, This is your one time password',
-                    'otp' => $token
-                ],'Reset Password OTP'));
+                myMailSend($request->email, $user->first_name . $user->last_name ,'Reset Password OTP', $token);
 
 
 

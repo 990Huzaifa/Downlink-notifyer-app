@@ -34,8 +34,8 @@ Route::get('/optimize-clear', function () {
     return 'Optimization cache cleared!';
 });
 
-Route::post('/broadcasting/auth', [NotificationController::class, 'broadcast'])
-    ->middleware('auth:sanctum');
+
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 Route::post('/webhook/apple', [WebhookController::class, 'handleApple']);
 Route::post('/webhook/google', [WebhookController::class, 'handleGoogle']);
