@@ -142,6 +142,7 @@ class ProcessGoogleNotification implements ShouldQueue
                             'notify_email' => 0,
                             'notify_sms' => 0,
                         ]);
+                    broadcast(new SubscriptionPlan($subscription->user_id));
                 }
                 // broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
