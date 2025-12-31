@@ -30,7 +30,7 @@ class FireEvents implements ShouldQueue
     public function handle()
     {
         // Delay of 5 seconds
-        sleep(5);  // Wait for 5 seconds before firing the events
+        sleep(3);  // Wait for 5 seconds before firing the events
 
         // Trigger the events
         // broadcast(new SiteLinkList($this->userId));

@@ -112,7 +112,7 @@ class ProcessGoogleNotification implements ShouldQueue
                         'status'            => 'active',
                         'canceled_at'      => null,
                     ]);
-                    broadcast(new SubscriptionPlan($subscription->user_id));
+                    FireEvents::dispatch($subscription->user_id)->delay(now()->addSeconds(3))->onQueue('event-broadcasts');
                 }
                 // fireevent
                 
@@ -142,7 +142,7 @@ class ProcessGoogleNotification implements ShouldQueue
                             'notify_email' => 0,
                             'notify_sms' => 0,
                         ]);
-                    broadcast(new SubscriptionPlan($subscription->user_id));
+                    FireEvents::dispatch($subscription->user_id)->delay(now()->addSeconds(3))->onQueue('event-broadcasts');
                 }
                 // broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
