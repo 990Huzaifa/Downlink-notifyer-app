@@ -7,6 +7,7 @@ use App\Events\ProfileInfo;
 use App\Events\SiteLinkList;
 use App\Events\SubscriptionPlan;
 use App\Http\Controllers\Controller;
+use App\Jobs\FireEvents;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -97,9 +98,14 @@ class NotificationController extends Controller
 
 
         // broadcast((new SiteLinkList($user->id)));
-        broadcast((new SubscriptionPlan($user->id)));
+        // broadcast((new SubscriptionPlan($user->id)));
         // broadcast((new NotificationList($user->id)));
-        broadcast((new ProfileInfo($user->id)));
+        // broadcast((new ProfileInfo($user->id)));
+
+        // we need to run these event separately to avoid delay in response we need a job queue for that
+
+        FireEvents::dispatch($user->id)->delay(now()->addSeconds(5));
+
         return response()->json([
             'auth' => $auth
         ]);
