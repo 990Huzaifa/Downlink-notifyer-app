@@ -55,7 +55,7 @@ class ProcessGoogleNotification implements ShouldQueue
             // but the webhook itself already returned 200 OK.
             Log::error('RTDN Job failed to process notification.', [
                 'error' => $e->getMessage(),
-                'base64' => $this->base64Data
+                'base64Decode' => $decodedJsonString
             ]);
 
             // Optional: Re-throw the exception to trigger Laravel queue retry
@@ -114,7 +114,7 @@ class ProcessGoogleNotification implements ShouldQueue
                     ]);
                 }
                 // fireevent
-                broadcast(new SubscriptionPlan($subscription->user_id));
+                broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
             case 3: // SUBSCRIPTION_CANCELED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('platform', 'google')->first();
