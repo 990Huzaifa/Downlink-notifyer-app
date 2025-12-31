@@ -104,7 +104,7 @@ class NotificationController extends Controller
 
         // we need to run these event separately to avoid delay in response we need a job queue for that
 
-        FireEvents::dispatch($user->id)->delay(now()->addSeconds(5));
+        FireEvents::dispatch($user->id)->delay(now()->addSeconds(5))->onQueue('event-broadcasts');
 
         return response()->json([
             'auth' => $auth
