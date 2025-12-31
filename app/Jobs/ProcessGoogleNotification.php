@@ -123,7 +123,7 @@ class ProcessGoogleNotification implements ShouldQueue
                         'canceled_at' => Carbon::now(),
                     ]);
                 }
-                broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
+                // broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
             case 13: // SUBSCRIPTION_EXPIRED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('plan',$productId)->where('platform', 'google')->first();
@@ -142,7 +142,7 @@ class ProcessGoogleNotification implements ShouldQueue
                             'notify_sms' => 0,
                         ]);
                 }
-                broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
+                // broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
             // ... include other types like RECOVERED, ON_HOLD, etc.
         }
