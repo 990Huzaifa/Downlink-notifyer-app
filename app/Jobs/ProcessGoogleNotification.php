@@ -112,9 +112,10 @@ class ProcessGoogleNotification implements ShouldQueue
                         'status'            => 'active',
                         'canceled_at'      => null,
                     ]);
+                    broadcast(new SubscriptionPlan($subscription->user_id));
                 }
                 // fireevent
-                broadcast(new SubscriptionPlan($subscription->user_id));
+                
                 break;
             case 3: // SUBSCRIPTION_CANCELED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('platform', 'google')->first();
