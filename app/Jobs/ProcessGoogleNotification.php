@@ -114,7 +114,7 @@ class ProcessGoogleNotification implements ShouldQueue
                     ]);
                 }
                 // fireevent
-                broadcast(new Subscription($subscription->user_id));
+                broadcast(new SubscriptionPlan($subscription->user_id));
                 // $user = User::find($subscription->user_id);
 
                 // if ($user) {

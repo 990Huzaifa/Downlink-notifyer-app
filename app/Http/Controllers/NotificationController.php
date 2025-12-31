@@ -83,10 +83,7 @@ class NotificationController extends Controller
         $channelName = $request->channel_name;
         $socketId = $request->socket_id;
         
-        \Log::info('Broadcasting authentication attempt', [
-            'user_id' => $user->id,
-            'channel' => $channelName
-        ]);
+        
         
         // Authenticate the channel
         $pusherKey = config('broadcasting.connections.pusher.key');
