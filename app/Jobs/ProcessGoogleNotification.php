@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Events\SubscriptionPlan;
 use App\Models\SiteLink;
 use App\Models\Subscription;
 use App\Models\User;
@@ -15,6 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Events\SubscriptionPlan;
 use Exception;
 
 class ProcessGoogleNotification implements ShouldQueue
@@ -114,7 +114,7 @@ class ProcessGoogleNotification implements ShouldQueue
                     ]);
                 }
                 // fireevent
-                broadcast(new SubscriptionPlan($subscription->user_id));
+                broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
             case 3: // SUBSCRIPTION_CANCELED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('platform', 'google')->first();
@@ -123,7 +123,7 @@ class ProcessGoogleNotification implements ShouldQueue
                         'canceled_at' => Carbon::now(),
                     ]);
                 }
-                broadcast(new SubscriptionPlan($subscription->user_id));
+                broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
             case 13: // SUBSCRIPTION_EXPIRED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('plan',$productId)->where('platform', 'google')->first();
@@ -142,7 +142,7 @@ class ProcessGoogleNotification implements ShouldQueue
                             'notify_sms' => 0,
                         ]);
                 }
-                broadcast(new SubscriptionPlan($subscription->user_id));
+                broadcast(new SubscriptionPlan($data['obfuscatedExternalAccountId']));
                 break;
             // ... include other types like RECOVERED, ON_HOLD, etc.
         }
