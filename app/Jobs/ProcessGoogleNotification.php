@@ -115,38 +115,6 @@ class ProcessGoogleNotification implements ShouldQueue
                 }
                 // fireevent
                 broadcast(new SubscriptionPlan($subscription->user_id));
-                // $user = User::find($subscription->user_id);
-
-                // if ($user) {
-
-                //     $limit = $user->linkLimitByPlan($productId);
-
-                //     // Current active count
-                //     $activeCount = SiteLink::where('user_id', $user->id)
-                //         ->where('is_disabled', false)
-                //         ->count();
-
-                //         if ($activeCount > $limit) break;
-
-                //     // Enable disabled links (oldest first)
-                //     $links = SiteLink::where('user_id', $user->id)
-                //         ->where('is_disabled', true)
-                //         ->orderBy('created_at')
-                //         ->get();
-
-                //     foreach ($links as $link) {
-                //         if ($activeCount > $limit) break;
-                //             $exists = SiteLink::where('user_id', $user->id)
-                //                 ->where('url', $link->url)
-                //                 ->where('is_disabled', false)
-                //                 ->exists();
-
-                //         if (!$exists) {
-                //             $link->update(['is_disabled' => false]);
-                //             $activeCount++;
-                //         }
-                //     }
-                // }
                 break;
             case 3: // SUBSCRIPTION_CANCELED
                 $subscription = Subscription::where('user_id', $data['obfuscatedExternalAccountId'])->where('platform', 'google')->first();
