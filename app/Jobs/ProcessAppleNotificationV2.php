@@ -63,7 +63,6 @@ class ProcessAppleNotificationV2 implements ShouldQueue
                 $subscription->update([
                     'plan'              => $productId,
                     'expires_at'        => $decodedTransactionInfo['expireDateFormatted'],
-                    'last_released_at'  =>($plan['type'] === 'credits_annual' ? Carbon::now() : null),
                     'status'            => 'active',
                     'canceled_at'      => null,
                 ]);

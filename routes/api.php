@@ -76,6 +76,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('run-event', [NotificationController::class, 'runEvent']);
 
     Route::post('google/verify-payment', [PaymentController::class, 'verifyGoogle']);
+    Route::post('apple/verify-payment', [PaymentController::class, 'verifyApple']);
 
         
 });
