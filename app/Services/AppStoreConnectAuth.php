@@ -13,7 +13,7 @@ class AppStoreConnectAuth
         
         $keyId = config('services.apple.key_id');          // App Store Connect se mila
         $issuerId = config('services.apple.issuer_id');    // App Store Connect se mila
-        $privateKeyPath = storage_path('app/apple/SubscriptionKey_J66JWWB42D.p8'); 
+        $privateKeyPath = storage_path('app/apple/SubscriptionKey_S6952LB8YX.p8'); 
         // 1. Private Key ko .p8 file se read karein
         $privateKey = file_get_contents($privateKeyPath);
         
@@ -48,7 +48,7 @@ class AppStoreConnectAuth
             // 'aud': Audience (App Store Connect API ke liye fixed value)
             'aud' => 'appstoreconnect-v1',
             
-            'bid' => 'com.racklineai.assistant',
+            'bid' => 'com.obtech.downlinknotifierios',
             // 'bid': Bundle ID (Agar sirf ek app ke liye use kar rahe hain)
             // Note: App Store Server API ke liye 'bid' zaroori nahi, lekin App Store Connect API ke liye hota hai. 
             // Agar App Store Server API ke liye use kar rahe hain to isko hata sakte hain ya 'scope' use karein.
