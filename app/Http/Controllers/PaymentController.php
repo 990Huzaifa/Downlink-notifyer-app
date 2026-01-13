@@ -43,7 +43,7 @@ class PaymentController extends Controller
             $latestReceipt = $res;
             // check subscription here..
 
-            $checkSub = $user->subscriptions()->where('platform', 'apple')->orderBy('updated_at', 'desc')->first();
+            $checkSub = $user->subscription()->where('platform', 'apple')->orderBy('updated_at', 'desc')->first();
             $caseData = 'new';
             if ($checkSub) {
                 $caseData = 'upgrade';
@@ -68,7 +68,7 @@ class PaymentController extends Controller
             }
             if($caseData == 'upgrade'){
                 DB::transaction(function () use ($user, $productId, $expiresAt, $latestReceipt) {
-                    $user->subscriptions()->where('transaction_id', $latestReceipt['originalTransactionId'])->update([
+                    $user->subscription()->where('transaction_id', $latestReceipt['originalTransactionId'])->update([
                         'plan'              => $productId,
                         'status'            => 'active',
                         'expires_at'        => $expiresAt,
@@ -247,7 +247,7 @@ class PaymentController extends Controller
             // ============================
 
 
-            $checkSub = $user->subscriptions()->where('platform', 'google')->where('user_id', $user->id)->first();
+            $checkSub = $user->subscription()->where('platform', 'google')->where('user_id', $user->id)->first();
             $caseData = 'new';
             if ($checkSub) {
                 $caseData = 'upgrade';
@@ -284,7 +284,7 @@ class PaymentController extends Controller
             }
             if($caseData == 'upgrade'){
                 DB::transaction(function () use ($user, $productId, $verificationData) {
-                    $user->subscriptions()->update([
+                    $user->subscription()->update([
                         'plan'              => $productId,
                         'platform'          => "google",
                         'transaction_id'    => $verificationData['obfuscatedExternalAccountId'] ?? $user->id,
