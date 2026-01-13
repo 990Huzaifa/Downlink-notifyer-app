@@ -19,8 +19,5 @@ class Subscription extends Model
         'expires_at',
     ];
 
-    public function subscriptions()
-    {
-        return $this->hasOne(Subscription::class, 'user_id', 'id');
-    }
+
 }
