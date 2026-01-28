@@ -21,3 +21,12 @@ Route::post('/test-broadcasting', function(\Illuminate\Http\Request $request) {
     \Log::info('Test route hit', $request->all());
     return response()->json(['status' => 'working']);
 });
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+Route::get('/support', function () {
+    return view('support');
+});
