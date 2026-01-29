@@ -282,23 +282,6 @@
                     <h3>Phone</h3>
                     <p><a href="tel:+1234567890">+1 (234) 567-890</a></p>
                 </div>
-
-                <div class="info-item">
-                    <h3>Address</h3>
-                    <p>123 Business Street<br>New York, NY 10001<br>United States</p>
-                </div>
-
-                <div class="info-item">
-                    <h3>Business Hours</h3>
-                    <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
-                </div>
-
-                <div class="social-links">
-                    <a href="#" class="social-icon" title="Facebook">f</a>
-                    <a href="#" class="social-icon" title="Twitter">𝕏</a>
-                    <a href="#" class="social-icon" title="LinkedIn">in</a>
-                    <a href="#" class="social-icon" title="Instagram">📷</a>
-                </div>
             </div>
         </div>
     </div>
