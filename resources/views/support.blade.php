@@ -275,12 +275,12 @@
 
                 <div class="info-item">
                     <h3>Email</h3>
-                    <p><a href="mailto:hello@example.com">hello@example.com</a></p>
+                    <p><a href="mailto:minhaj.ali.khan909@gmail.com">minhaj.ali.khan909@gmail.com</a></p>
                 </div>
 
                 <div class="info-item">
                     <h3>Phone</h3>
-                    <p><a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                    <p><a href="tel:+923322660835">+92 332 2660835</a></p>
                 </div>
             </div>
         </div>
