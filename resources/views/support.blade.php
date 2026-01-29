@@ -109,7 +109,7 @@
                 let formData = new FormData(this);
                 
                 $.ajax({
-                    url: "{{ route('contact.submit') }}",  // Update with the correct route
+                    url: "/",  // Update with the correct route
                     method: 'POST',
                     data: formData,
                     processData: false,
