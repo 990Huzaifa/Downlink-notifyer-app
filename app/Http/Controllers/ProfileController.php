@@ -68,15 +68,15 @@ class ProfileController extends Controller
         try{
             $user = Auth::user();
             $valiudator = Validator::make($request->all(), [
-                'fcm_token' => 'required|string',
+                'fcm_id' => 'required|string',
             ],[
-                'fcm_token.required' => 'The fcm_token field is required.',
-                'fcm_token.string' => 'The fcm_token must be a string.',
+                'fcm_id.required' => 'The fcm_token field is required.',
+                'fcm_id.string' => 'The fcm_token must be a string.',
             ]);
 
             if ($valiudator->fails()) throw new Exception($valiudator->errors()->first(), 400);
-            
-            $user->fcm_token = $request->fcm_token;
+
+            $user->fcm_id = $request->fcm_id;
             $user->save();
             return response()->json(['message' => 'FCM token updated successfully'], 200);
         }catch(Exception $e){
