@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\NotifyUser;
 use App\Models\SiteLink;
 use App\Models\SiteCheck;
 use App\Services\GooglePageSpeedService;
@@ -62,7 +63,7 @@ class ProcessSiteMetricsJob implements ShouldQueue
             $pageSpeedData = $service->getCombinedData($siteLink->url);
 
             // 🔹 Update latest SiteCheck
-            SiteCheck::updateOrCreate(
+            $site = SiteCheck::updateOrCreate(
                 ['site_link_id' => $siteLink->id],
                 [
                     'status'            => $metrics['status'],
@@ -76,6 +77,24 @@ class ProcessSiteMetricsJob implements ShouldQueue
                         : null,
                 ]
             );
+
+            // send notification logic here
+                if($metrics['status'] == 'down') {
+                    broadcast(new NotifyUser("Site Down Alert", $siteLink->user_id, [
+                        'site_link_id' => $this->siteLinkId,
+                        'status' => 'down',
+                        'site' => $site
+                    ]));
+                    
+                }else{
+                    
+                    broadcast(new NotifyUser("Site Up Alert", $siteLink->user_id, [
+                        'site_link_id' => $siteLink->id,
+                        'status' => 'up',
+                        'site' => $site
+                    ]));
+                    
+                }
 
         } catch (Throwable $e) {
             Log::error('ProcessSiteMetricsJob failed', [
