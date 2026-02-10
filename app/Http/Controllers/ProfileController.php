@@ -62,5 +62,26 @@ class ProfileController extends Controller
             return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
         }
     }
+
+    public function updateFCMToken(Request $request): JsonResponse
+    {
+        try{
+            $user = Auth::user();
+            $valiudator = Validator::make($request->all(), [
+                'fcm_token' => 'required|string',
+            ],[
+                'fcm_token.required' => 'The fcm_token field is required.',
+                'fcm_token.string' => 'The fcm_token must be a string.',
+            ]);
+
+            if ($valiudator->fails()) throw new Exception($valiudator->errors()->first(), 400);
+            
+            $user->fcm_token = $request->fcm_token;
+            $user->save();
+            return response()->json(['message' => 'FCM token updated successfully'], 200);
+        }catch(Exception $e){
+            return response()->json(['error', $e->getMessage()], $e->getCode() ?: 500);
+        }
+    }
 }
     
