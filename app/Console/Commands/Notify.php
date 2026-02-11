@@ -108,14 +108,14 @@ class Notify extends Command
                         ]);
                     }
 
-                    if($Site->notify_email) {
-                        myMailSend(
-                            $user->email,
-                            $user->name,
-                            "Site Up Alert: {$Site->url}",
-                            "The site {$Site->url} is up. Please check."
-                        );
-                    }
+                    // if($Site->notify_email) {
+                    //     myMailSend(
+                    //         $user->email,
+                    //         $user->name,
+                    //         "Site Up Alert: {$Site->url}",
+                    //         "The site {$Site->url} is up. Please check."
+                    //     );
+                    // }
                     broadcast(new NotifyUser("Site Up Alert", $user->id, [
                         'site_link_id' => $Site->id,
                         'status' => 'up',
