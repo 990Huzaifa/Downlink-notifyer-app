@@ -95,12 +95,12 @@ class Notify extends Command
 
                     if($user->fcm_id != null) {
 
-                        $notification = Notification::create([
-                            'user_id' => $user->id,
-                            'title' => "Site Up Alert",
-                            'message' => "The site {$Site->url} is up.",
-                            'data' => json_encode($data)
-                        ]);
+                        // $notification = Notification::create([
+                        //     'user_id' => $user->id,
+                        //     'title' => "Site Up Alert",
+                        //     'message' => "The site {$Site->url} is up.",
+                        //     'data' => json_encode($data)
+                        // ]);
 
                         $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.", [
                             'site_link_id' => $Site->id,
