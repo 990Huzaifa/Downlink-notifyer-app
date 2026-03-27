@@ -102,10 +102,10 @@ class Notify extends Command
                         //     'data' => json_encode($data)
                         // ]);
 
-                        $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.", [
-                            'site_link_id' => $Site->id,
-                            'status' => 'up',
-                        ]);
+                        // $service->sendToDevice($user->fcm_id, "Site Up Alert", "The site {$Site->url} is up.", [
+                        //     'site_link_id' => $Site->id,
+                        //     'status' => 'up',
+                        // ]);
                     }
 
                     // if($Site->notify_email) {
