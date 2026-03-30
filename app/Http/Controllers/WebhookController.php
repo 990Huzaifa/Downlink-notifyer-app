@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class WebhookController extends Controller
 {
-    public function handle(Request $request)
+    public function handleApple(Request $request)
     {
         $signedPayload = $request->input('signedPayload');
 
